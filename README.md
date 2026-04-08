@@ -37,13 +37,7 @@ Simply navigate to the hosted URL and start browsing — no installs required.
 ### Self-Hosting
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/index.git
-
-# Navigate into the project
-cd index
-
-# Open in browser or deploy to your preferred host
-open index.html
+git clone https://github.com/sterfry97/index.games.git
 ```
 
 > For full proxy functionality, deploy to a platform like **Vercel**, **Netlify**, or **Cloudflare Pages**.
