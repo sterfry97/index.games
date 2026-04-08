@@ -300,7 +300,10 @@
 			}
 			.index-sub {
 				font-size: 12px; color: var(--text-muted); letter-spacing: 0.06em; margin-bottom: 40px;
+				opacity: 0;
+				transition: opacity 0.5s ease;
 			}
+			.index-sub.visible { opacity: 1; }
 
 			.search-row {
 				display: flex; align-items: center;
@@ -782,10 +785,8 @@
 			const TOTAL_LINES = 100;
 			for (let li = 0; li < TOTAL_LINES; li++) {
 				const t = li / TOTAL_LINES;
-				// accent: last 3 lines are brighter/thicker
 				const isAccent = li >= TOTAL_LINES - 3;
 				const accentStrength = isAccent ? (li - (TOTAL_LINES - 3)) / 3 : 0;
-				// white lines — dim far lines, bright accent lines
 				const alpha = isAccent
 					? 0.55 + accentStrength * 0.45
 					: 0.04 + t * 0.18;
@@ -800,7 +801,6 @@
 					const dist = Math.sqrt(dx * dx + dy * dy * 4);
 					const repel = dist < 0.12 ? (0.12 - dist) / 0.12 : 0;
 					const repelDir = t < mouseY ? -1 : 1;
-					// slightly different wave frequencies for a distinct look
 					const w1 = Math.sin(px * 4   + voidT * 0.9  + li * 0.20) * 0.030;
 					const w2 = Math.sin(px * 9   - voidT * 0.6  + li * 0.28) * 0.016;
 					const w3 = Math.sin(px * 2.5 + voidT * 0.35 + li * 0.10) * 0.050;
@@ -856,7 +856,7 @@
 		});
 
 		/* ─────────────────────────────────────────
-		   CLOAK SYSTEM (unchanged)
+		   CLOAK SYSTEM
 		───────────────────────────────────────── */
 		let currentCloak = { title: "Index", favicon: "", cloak: "none" };
 
@@ -957,7 +957,7 @@
 		];
 
 		/* ─────────────────────────────────────────
-		   PROXY / SCRAMJET (unchanged)
+		   PROXY / SCRAMJET
 		───────────────────────────────────────── */
 		const { ScramjetController } = $scramjetLoadController();
 		const scramjet = new ScramjetController({
@@ -979,7 +979,7 @@
 		}
 
 		/* ─────────────────────────────────────────
-		   TAB SYSTEM (unchanged)
+		   TAB SYSTEM
 		───────────────────────────────────────── */
 		const tabBar     = document.getElementById("tab-bar");
 		const newTabBtn  = document.getElementById("new-tab-btn");
@@ -1082,8 +1082,8 @@
 			return '<div class="home-content">' +
 				'<div class="home-center">' +
 				'<div class="index-wordmark">proxy</div>' +
-				'<div class="index-title">Index<span class="index-cursor"></span></div>' +
-				'<div class="index-sub">unrestricted access</div>' +
+				'<div class="index-title"><span class="tw-text"></span><span class="index-cursor"></span></div>' +
+				'<div class="index-sub tw-sub">unrestricted access</div>' +
 				'<form class="sj-form" data-tab="' + id + '" style="width:100%;max-width:560px;display:flex;flex-direction:column;align-items:center;">' +
 				'<input class="sj-search-engine" value="https://duckduckgo.com/?q=%s" type="hidden" />' +
 				'<div class="search-row">' +
@@ -1111,6 +1111,24 @@
 			paneEl.querySelectorAll(".quick-app").forEach(el => {
 				el.addEventListener("click", () => navigateTab(id, el.dataset.url));
 			});
+
+			/* ── TYPEWRITER EFFECT ── */
+			const twEl  = paneEl.querySelector(".tw-text");
+			const twSub = paneEl.querySelector(".tw-sub");
+			if (twEl) {
+				const word = "Index";
+				let i = 0;
+				function type() {
+					if (i <= word.length) {
+						twEl.textContent = word.slice(0, i);
+						i++;
+						setTimeout(type, i === 1 ? 320 : 80 + Math.random() * 70);
+					} else if (twSub) {
+						twSub.classList.add("visible");
+					}
+				}
+				setTimeout(type, 480);
+			}
 		}
 
 		newTabBtn.addEventListener("click", () => createTab());
