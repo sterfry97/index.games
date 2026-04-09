@@ -42,34 +42,6 @@ git clone https://github.com/sterfry97/index.games.git
 
 > For full proxy functionality, deploy to a platform like **Vercel**, **Netlify**, or **Cloudflare Pages**.
 
----
-
-## 🛠️ Deployment
-
-| Platform | Status |
-|----------|--------|
-| Vercel | ✅ Supported |
-| Netlify | ✅ Supported |
-| Cloudflare Pages | ✅ Supported |
-| GitHub Pages | ✅ Supported |
-
----
-
-## 📁 Project Structure
-
-```
-index/
-├── index.html        # Main entry point
-├── assets/
-│   ├── css/          # Stylesheets
-│   ├── js/           # Scripts
-│   └── img/          # Icons & images
-├── games/            # Unblocked games
-├── proxy/            # Proxy logic
-└── README.md
-```
-
----
 
 ## ⚠️ Disclaimer
 
