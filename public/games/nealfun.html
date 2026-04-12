@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <base href="/" />
+    <title>neal.fun</title>
+    <script src="/scram/scramjet.all.js"></script>
+    <script src="/baremux/index.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
+    </style>
+</head>
+<body>
+    <script src="/register-sw.js"></script>
+    <script>
+    (async () => {
+        const { ScramjetController } = $scramjetLoadController();
+        const sj = new ScramjetController({
+            files: {
+                wasm: "/scram/scramjet.wasm.wasm",
+                all:  "/scram/scramjet.all.js",
+                sync: "/scram/scramjet.sync.js"
+            }
+        });
+
+        await sj.init();
+
+        const c = new BareMux.BareMuxConnection("/baremux/worker.js");
+        const wispUrl = (location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/";
+        if ((await c.getTransport()) !== "/libcurl/index.mjs") {
+            await c.setTransport("/libcurl/index.mjs", [{ websocket: wispUrl }]);
+        }
+
+        await registerSW();
+
+        const f = sj.createFrame();
+        f.frame.style.cssText = "width:100vw;height:100vh;border:none;display:block;position:fixed;inset:0;";
+        document.body.appendChild(f.frame);
+        f.go("https://neal.fun");
+    })();
+    </script>
+</body>
+</html>

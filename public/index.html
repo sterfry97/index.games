@@ -11,524 +11,6 @@
 		<link rel="stylesheet" href="index.css" />
 		<script src="register-sw.js" defer></script>
 		<script src="search.js" defer></script>
-
-		<style>
-			:root {
-				--bg: #111211;
-				--bg2: #161816;
-				--bg3: #1c1e1c;
-				--border: rgba(74,180,100,0.13);
-				--border2: rgba(74,180,100,0.22);
-				--green: #4ab464;
-				--green-dim: #2e7d44;
-				--green-muted: rgba(74,180,100,0.45);
-				--text: #4ab464;
-				--text-dim: #2e7d44;
-				--text-muted: rgba(74,180,100,0.38);
-				--text-bright: #72cf8a;
-			}
-
-			/* ── NEXORA THEME ── */
-			body.theme-nexora {
-				--bg: #0a0500;
-				--bg2: #130b00;
-				--bg3: #1e1100;
-				--border: rgba(255,100,0,0.18);
-				--border2: rgba(255,100,0,0.35);
-				--green: #ff6600;
-				--green-dim: #cc4400;
-				--green-muted: rgba(255,100,0,0.45);
-				--text: #ff8833;
-				--text-dim: #cc5500;
-				--text-muted: rgba(255,140,50,0.38);
-				--text-bright: #ffffff;
-			}
-
-			/* ── WAVE THEME ── */
-			body.theme-wave {
-				--bg: #1a2330;
-				--bg2: #1e2a38;
-				--bg3: #243040;
-				--border: rgba(100,200,120,0.13);
-				--border2: rgba(100,200,120,0.25);
-				--green: #6ec87a;
-				--green-dim: #4a9e58;
-				--green-muted: rgba(110,200,122,0.45);
-				--text: #6ec87a;
-				--text-dim: #4a9e58;
-				--text-muted: rgba(110,200,122,0.38);
-				--text-bright: #a8e6b0;
-			}
-
-			/* ── VOID THEME ── */
-			body.theme-void {
-				--bg: #000000;
-				--bg2: #0a0a0a;
-				--bg3: #111111;
-				--border: rgba(255,255,255,0.10);
-				--border2: rgba(255,255,255,0.22);
-				--green: #ffffff;
-				--green-dim: #aaaaaa;
-				--green-muted: rgba(255,255,255,0.35);
-				--text: #cccccc;
-				--text-dim: #888888;
-				--text-muted: rgba(255,255,255,0.28);
-				--text-bright: #ffffff;
-			}
-
-			*, *::before, *::after { box-sizing: border-box; }
-
-			html, body {
-				margin: 0; padding: 0; height: 100%;
-				overflow: hidden;
-				background: var(--bg);
-				color: var(--text);
-				font-family: 'Courier New', Courier, monospace;
-			}
-
-			/* ── CANVAS BACKGROUNDS ── */
-			#bg-canvas {
-				position: fixed; inset: 0;
-				pointer-events: none; z-index: 0;
-				display: none;
-			}
-			body.theme-nexora #bg-canvas,
-			body.theme-wave #bg-canvas,
-			body.theme-void #bg-canvas { display: block; }
-			body.theme-wave #bg-canvas,
-			body.theme-void #bg-canvas { pointer-events: all; }
-
-			#app, #tab-bar, #main-area { position: relative; z-index: 1; }
-
-			#tab-bar {
-				display: flex; align-items: center; gap: 2px;
-				padding: 6px 8px 0;
-				background: var(--bg2);
-				border-bottom: 1px solid var(--border);
-				height: 42px; flex-shrink: 0;
-				overflow: hidden;
-			}
-
-			.tab {
-				display: flex; align-items: center; gap: 6px;
-				padding: 5px 8px 5px 10px;
-				border-radius: 6px 6px 0 0;
-				cursor: pointer; font-size: 11px; font-family: inherit;
-				white-space: nowrap; min-width: 40px;
-				flex: 1 1 0; max-width: 200px;
-				background: var(--bg3);
-				border: 1px solid var(--border); border-bottom: none;
-				color: var(--text-dim);
-				transition: background 0.15s, color 0.15s;
-				user-select: none; position: relative; bottom: -1px;
-				letter-spacing: 0.02em; overflow: hidden;
-			}
-			.tab:hover { background: var(--bg2); color: var(--text); }
-			.tab.active { background: var(--bg); color: var(--text-bright); border-color: var(--border2); z-index: 1; }
-
-			.tab-spinner {
-				width: 12px; height: 12px;
-				border: 1.5px solid var(--text-muted);
-				border-top-color: var(--green);
-				border-radius: 50%;
-				animation: spin 0.6s linear infinite;
-				flex-shrink: 0; display: none;
-			}
-			.tab.loading .tab-spinner { display: block; }
-			.tab-title { overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; }
-			.tab-close {
-				flex-shrink: 0; width: 15px; height: 15px; border-radius: 3px;
-				display: flex; align-items: center; justify-content: center;
-				font-size: 9px; line-height: 1; opacity: 0;
-				background: transparent; border: none; color: var(--text-dim);
-				cursor: pointer; padding: 0;
-				transition: opacity 0.1s, color 0.1s; font-family: inherit;
-			}
-			.tab:hover .tab-close, .tab.active .tab-close { opacity: 1; }
-			.tab-close:hover { color: #e06060; }
-
-			#new-tab-btn {
-				flex-shrink: 0; width: 26px; height: 26px; border-radius: 5px;
-				border: 1px solid var(--border); background: transparent;
-				color: var(--text-dim); font-size: 16px; line-height: 1; cursor: pointer;
-				display: flex; align-items: center; justify-content: center;
-				transition: background 0.15s, color 0.15s;
-				margin-left: 4px; padding: 0; font-family: inherit;
-			}
-			#new-tab-btn:hover { background: var(--bg3); color: var(--text-bright); border-color: var(--border2); }
-
-			#settings-btn {
-				flex-shrink: 0; height: 26px; border-radius: 5px;
-				border: 1px solid var(--border2); background: var(--bg3);
-				color: var(--text-bright); font-size: 12px; line-height: 1; cursor: pointer;
-				display: flex; align-items: center; justify-content: center;
-				gap: 5px;
-				transition: background 0.15s, color 0.15s;
-				margin-left: auto; padding: 0 12px; font-family: inherit;
-				letter-spacing: 0.05em;
-			}
-			#settings-btn:hover { background: var(--bg2); border-color: var(--green); color: var(--text-bright); }
-			#settings-btn.active { border-color: var(--green); }
-
-			/* ── GAMES BTN ── */
-			#games-btn {
-				flex-shrink: 0; height: 26px; border-radius: 5px;
-				border: 1px solid var(--border); background: transparent;
-				color: var(--text-dim); font-size: 12px; line-height: 1; cursor: pointer;
-				display: flex; align-items: center; justify-content: center;
-				gap: 5px;
-				transition: background 0.15s, color 0.15s, border-color 0.15s;
-				margin-left: 6px; padding: 0 12px; font-family: inherit;
-				letter-spacing: 0.05em;
-			}
-			#games-btn:hover { background: var(--bg3); border-color: var(--border2); color: var(--text-bright); }
-			#games-btn.active { border-color: var(--green); color: var(--text-bright); background: var(--bg3); }
-
-			#app { display: flex; flex-direction: column; height: 100vh; }
-			#main-area { display: flex; flex: 1; overflow: hidden; }
-			#tab-content { flex: 1; position: relative; overflow: hidden; }
-
-			#settings-panel {
-				width: 0; overflow: hidden;
-				background: var(--bg2);
-				border-left: 1px solid var(--border);
-				display: flex; flex-direction: column;
-				transition: width 0.22s cubic-bezier(0.4,0,0.2,1);
-				flex-shrink: 0;
-			}
-			#settings-panel.open { width: 260px; }
-
-			.settings-inner {
-				width: 260px; padding: 18px 16px;
-				display: flex; flex-direction: column; gap: 24px;
-				overflow-y: auto; height: 100%;
-			}
-			.settings-header {
-				font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase;
-				color: var(--text-muted); padding-bottom: 10px;
-				border-bottom: 1px solid var(--border);
-			}
-			.settings-section { display: flex; flex-direction: column; gap: 10px; }
-			.settings-section-label {
-				font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
-				color: var(--text-muted);
-			}
-
-			.cloak-options { display: flex; flex-direction: column; gap: 6px; }
-			.cloak-option {
-				display: flex; align-items: center; gap: 10px;
-				padding: 9px 11px; border-radius: 6px;
-				border: 1px solid var(--border); background: var(--bg3);
-				cursor: pointer; transition: border-color 0.15s, background 0.15s;
-				font-size: 11px; color: var(--text-dim); user-select: none;
-			}
-			.cloak-option:hover { border-color: var(--border2); color: var(--text); }
-			.cloak-option.selected { border-color: var(--green); color: var(--text-bright); }
-			.cloak-option-icon { width: 20px; height: 20px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; }
-			.cloak-option-info { display: flex; flex-direction: column; gap: 1px; }
-			.cloak-option-name { font-size: 11px; }
-			.cloak-option-url { font-size: 9px; color: var(--text-muted); }
-
-			.ab-btn {
-				display: flex; align-items: center; gap: 10px;
-				padding: 11px 13px; border-radius: 6px;
-				border: 1px solid var(--border2); background: var(--bg3);
-				cursor: pointer; transition: border-color 0.15s, background 0.15s;
-				font-family: inherit; width: 100%; text-align: left; color: var(--text-dim);
-			}
-			.ab-btn:hover { border-color: var(--green); color: var(--text-bright); background: var(--bg2); }
-			.ab-btn-icon { font-size: 18px; flex-shrink: 0; }
-			.ab-btn-name { font-size: 11px; color: var(--text-bright); }
-			.ab-btn-desc { font-size: 9px; color: var(--text-muted); margin-top: 2px; }
-
-			/* ── THEME PICKER ── */
-			.theme-options { display: flex; flex-direction: column; gap: 6px; }
-			.theme-option {
-				display: flex; align-items: center; gap: 10px;
-				padding: 9px 11px; border-radius: 6px;
-				border: 1px solid var(--border); background: var(--bg3);
-				cursor: pointer; transition: border-color 0.15s;
-				font-size: 11px; color: var(--text-dim); user-select: none;
-			}
-			.theme-option:hover { border-color: var(--border2); color: var(--text); }
-			.theme-option.selected { border-color: var(--green); color: var(--text-bright); }
-			.theme-swatch {
-				width: 28px; height: 28px; border-radius: 6px;
-				border: 1px solid rgba(255,255,255,0.1);
-				flex-shrink: 0; display: flex; align-items: center; justify-content: center;
-				font-size: 13px;
-			}
-			.swatch-default { background: linear-gradient(135deg, #111211 50%, #4ab464 50%); }
-			.swatch-nexora  { background: linear-gradient(135deg, #0a0500 50%, #ff6600 50%); }
-			.swatch-wave    { background: linear-gradient(135deg, #1a2330 50%, #6ec87a 50%); }
-			.swatch-void    { background: linear-gradient(135deg, #000000 50%, #ffffff 50%); }
-
-			.settings-note {
-				font-size: 9px; color: var(--text-muted); line-height: 1.6; letter-spacing: 0.02em;
-			}
-
-			.tab-pane {
-				position: absolute; inset: 0;
-				display: none; flex-direction: column; overflow-y: auto;
-			}
-			.tab-pane.active { display: flex; }
-			.tab-pane iframe { width: 100%; height: 100%; border: none; flex: 1; }
-
-			.home-content {
-				flex: 1; display: flex; flex-direction: column;
-				overflow-y: auto; background: transparent;
-			}
-			.home-center {
-				flex: 1; display: flex; flex-direction: column;
-				align-items: center; justify-content: center;
-				padding: 3rem 1.5rem 2rem; gap: 0;
-			}
-
-			.index-wordmark {
-				font-size: 11px; letter-spacing: 0.45em; text-transform: uppercase;
-				color: var(--text-muted); margin-bottom: 6px;
-			}
-			.index-title {
-				font-size: 52px; font-weight: 700; color: var(--text-bright);
-				letter-spacing: -0.02em; margin: 0 0 4px; line-height: 1;
-			}
-			body.theme-nexora .index-title { color: #ff6600; text-shadow: 0 0 40px rgba(255,100,0,0.5); }
-			.index-cursor {
-				display: inline-block; width: 3px; height: 0.85em;
-				background: var(--green); margin-left: 3px; vertical-align: middle;
-				animation: blink 1.1s step-end infinite;
-			}
-			.index-sub {
-				font-size: 12px; color: var(--text-muted); letter-spacing: 0.06em; margin-bottom: 40px;
-				opacity: 0; transition: opacity 0.5s ease;
-			}
-			.index-sub.visible { opacity: 1; }
-
-			.search-row {
-				display: flex; align-items: center;
-				width: 100%; max-width: 560px;
-				border: 1px solid var(--border2); border-radius: 6px;
-				background: var(--bg2); overflow: hidden; transition: border-color 0.2s;
-			}
-			.search-row:focus-within { border-color: var(--green); }
-			.search-prompt {
-				padding: 0 0 0 16px; font-size: 13px;
-				color: var(--text-dim); white-space: nowrap; user-select: none;
-			}
-			.sj-address {
-				flex: 1; background: transparent; border: none; outline: none;
-				color: var(--text-bright); font-size: 14px; font-family: inherit;
-				padding: 14px 12px; caret-color: var(--green); letter-spacing: 0.01em;
-			}
-			.sj-address::placeholder { color: var(--text-muted); }
-			.search-enter {
-				padding: 0 14px; color: var(--text-dim); font-size: 11px; white-space: nowrap;
-			}
-			.sj-error {
-				color: #e06060; font-size: 12px; text-align: center;
-				margin-top: 12px; min-height: 16px;
-			}
-
-			.quick-apps { width: 100%; max-width: 560px; margin-top: 28px; }
-			.quick-apps-label {
-				font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
-				color: var(--text-muted); margin-bottom: 10px; text-align: center;
-			}
-			.quick-apps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-			.quick-app {
-				display: flex; flex-direction: column; align-items: center; gap: 7px;
-				padding: 13px 6px 10px; background: var(--bg2);
-				border: 1px solid var(--border); border-radius: 8px; cursor: pointer;
-				transition: background 0.15s, border-color 0.15s, transform 0.1s;
-				color: var(--text-dim); font-size: 10px; font-family: inherit;
-				letter-spacing: 0.03em; user-select: none;
-			}
-			.quick-app:hover { background: var(--bg3); border-color: var(--border2); color: var(--text-bright); transform: translateY(-2px); }
-			.quick-app:active { transform: translateY(0); }
-			.quick-app-icon {
-				width: 30px; height: 30px; border-radius: 7px; background: var(--bg3);
-				border: 1px solid var(--border); display: flex; align-items: center;
-				justify-content: center; overflow: hidden; flex-shrink: 0;
-			}
-			.quick-app-name { text-align: center; line-height: 1.2; }
-
-			.home-footer {
-				padding: 14px 24px; display: flex; align-items: center; justify-content: center;
-				border-top: 1px solid var(--border); font-size: 10px; color: var(--text-muted);
-				letter-spacing: 0.08em; text-transform: uppercase; gap: 24px; background: var(--bg2);
-			}
-
-			/* ══════════════════════════════════════
-			   GAMES PAGE
-			══════════════════════════════════════ */
-			.games-content {
-				flex: 1; display: flex; flex-direction: column;
-				overflow: hidden; background: transparent;
-			}
-			.games-topbar {
-				display: flex; align-items: center; gap: 10px;
-				padding: 8px 14px;
-				border-bottom: 1px solid var(--border);
-				background: var(--bg2); flex-shrink: 0;
-			}
-			.games-topbar-title {
-				font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
-				color: var(--text-muted); white-space: nowrap;
-			}
-			.games-search-wrap {
-				flex: 1; max-width: 340px;
-				display: flex; align-items: center;
-				background: var(--bg3); border: 1px solid var(--border);
-				border-radius: 5px; overflow: hidden;
-				transition: border-color 0.15s;
-			}
-			.games-search-wrap:focus-within { border-color: var(--green); }
-			.games-search-icon { padding: 0 8px; font-size: 11px; color: var(--text-muted); user-select: none; }
-			.games-search {
-				flex: 1; background: transparent; border: none; outline: none;
-				color: var(--text-bright); font-family: inherit; font-size: 12px;
-				padding: 7px 8px 7px 0; caret-color: var(--green);
-			}
-			.games-search::placeholder { color: var(--text-muted); }
-			.games-search-clear {
-				padding: 0 8px; font-size: 11px; color: var(--text-muted);
-				cursor: pointer; background: none; border: none;
-				font-family: inherit; display: none;
-				transition: color 0.1s;
-			}
-			.games-search-clear:hover { color: var(--text-bright); }
-			.games-search-clear.visible { display: block; }
-			.games-count-badge {
-				font-size: 10px; color: var(--text-muted);
-				border: 1px solid var(--border); border-radius: 3px;
-				padding: 2px 8px; white-space: nowrap; flex-shrink: 0;
-			}
-			.games-close-btn {
-				flex-shrink: 0; height: 26px; padding: 0 12px;
-				background: var(--bg3); border: 1px solid var(--border2);
-				border-radius: 5px; color: var(--text-dim); font-family: inherit;
-				font-size: 11px; cursor: pointer; letter-spacing: 0.05em;
-				transition: color 0.15s, border-color 0.15s; margin-left: auto;
-			}
-			.games-close-btn:hover { color: var(--text-bright); border-color: var(--green); }
-			.games-tagbar {
-				display: flex; align-items: center; gap: 6px;
-				padding: 7px 14px; border-bottom: 1px solid var(--border);
-				background: var(--bg2); flex-shrink: 0;
-				overflow-x: auto; scrollbar-width: none;
-			}
-			.games-tagbar::-webkit-scrollbar { display: none; }
-			.games-tag {
-				flex-shrink: 0; padding: 3px 10px; border-radius: 20px;
-				border: 1px solid var(--border); background: transparent;
-				color: var(--text-muted); font-family: inherit; font-size: 10px;
-				cursor: pointer; letter-spacing: 0.05em; text-transform: lowercase;
-				transition: border-color 0.12s, color 0.12s, background 0.12s;
-				user-select: none;
-			}
-			.games-tag:hover { border-color: var(--border2); color: var(--text); }
-			.games-tag.active {
-				border-color: var(--green); color: var(--text-bright);
-				background: rgba(74,180,100,0.08);
-			}
-			.games-grid-area {
-				flex: 1; overflow-y: auto; padding: 18px 16px;
-				scrollbar-width: thin;
-				scrollbar-color: var(--border2) transparent;
-			}
-			.games-grid-area::-webkit-scrollbar { width: 5px; }
-			.games-grid-area::-webkit-scrollbar-track { background: transparent; }
-			.games-grid-area::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
-			.games-grid {
-				display: grid;
-				grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-				gap: 10px;
-			}
-			.game-card {
-				display: flex; flex-direction: column; align-items: center;
-				gap: 8px; padding: 16px 10px 12px;
-				background: var(--bg2); border: 1px solid var(--border);
-				border-radius: 8px; cursor: pointer;
-				transition: background 0.12s, border-color 0.12s, transform 0.1s;
-				user-select: none; text-align: center;
-			}
-			.game-card:hover {
-				background: var(--bg3); border-color: var(--border2);
-				transform: translateY(-2px);
-			}
-			.game-card:active { transform: translateY(0); }
-			.game-card-icon {
-				font-size: 26px; line-height: 1;
-				width: 48px; height: 48px; border-radius: 10px;
-				background: var(--bg3); border: 1px solid var(--border);
-				display: flex; align-items: center; justify-content: center;
-				transition: border-color 0.12s;
-			}
-			.game-card:hover .game-card-icon { border-color: var(--border2); }
-			.game-card-name {
-				font-size: 11px; color: var(--text-bright);
-				line-height: 1.3; word-break: break-word;
-			}
-			.game-card-desc {
-				font-size: 9px; color: var(--text-muted);
-				line-height: 1.4; word-break: break-word;
-				display: -webkit-box; -webkit-line-clamp: 2;
-				-webkit-box-orient: vertical; overflow: hidden;
-				line-clamp: 2;
-			}
-			.game-card-tags {
-				display: flex; flex-wrap: wrap; gap: 3px; justify-content: center;
-				margin-top: 2px;
-			}
-			.game-card-tag {
-				font-size: 8px; color: var(--text-muted);
-				border: 1px solid var(--border); border-radius: 10px;
-				padding: 1px 5px; letter-spacing: 0.04em;
-			}
-			.games-noresults {
-				grid-column: 1 / -1;
-				padding: 48px 0; text-align: center;
-				color: var(--text-muted); font-size: 11px;
-				letter-spacing: 0.1em; line-height: 2;
-			}
-
-			/* ── GAME MODAL ── */
-			#game-modal {
-				position: fixed; inset: 0; z-index: 9999;
-				background: var(--bg);
-				display: none; flex-direction: column;
-			}
-			#game-modal.open { display: flex; }
-			.game-modal-bar {
-				display: flex; align-items: center; gap: 10px;
-				padding: 7px 14px; background: var(--bg2);
-				border-bottom: 1px solid var(--border); flex-shrink: 0;
-			}
-			.game-modal-name {
-				font-size: 12px; color: var(--text-bright); letter-spacing: 0.05em;
-			}
-			.game-modal-file {
-				font-size: 9px; color: var(--text-muted);
-			}
-			.game-modal-actions {
-				margin-left: auto; display: flex; gap: 6px;
-			}
-			.game-modal-btn {
-				height: 26px; padding: 0 11px;
-				background: transparent; border: 1px solid var(--border);
-				border-radius: 4px; color: var(--text-dim); font-family: inherit;
-				font-size: 10px; cursor: pointer; letter-spacing: 0.04em;
-				transition: color 0.12s, border-color 0.12s;
-			}
-			.game-modal-btn:hover { color: var(--text-bright); border-color: var(--border2); }
-			.game-modal-btn.close-btn:hover { color: #e06060; border-color: #e06060; }
-			.game-modal-iframe {
-				flex: 1; border: none; display: block; width: 100%; height: 100%;
-			}
-
-			@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-			@keyframes spin { to { transform: rotate(360deg); } }
-		</style>
 	</head>
 
 	<body>
@@ -551,102 +33,221 @@
 			<div id="tab-bar">
 				<button id="new-tab-btn" title="New tab">+</button>
 				<button id="games-btn" title="Games">🎮 games</button>
-				<button id="settings-btn" title="Settings">⚙ settings</button>
+				<button id="apps-btn" title="Apps">🗂 apps</button>
+				<!-- settings button removed from tab bar — now a FAB -->
 			</div>
 			<div id="main-area">
 				<div id="tab-content"></div>
-				<div id="settings-panel">
-					<div class="settings-inner">
-						<div class="settings-header">// settings</div>
-
-						<div class="settings-section">
-							<div class="settings-section-label">cloak</div>
-							<div class="cloak-options" id="cloak-options">
-								<div class="cloak-option selected" data-title="Index" data-favicon="" data-cloak="none">
-									<div class="cloak-option-icon">🌿</div>
-									<div class="cloak-option-info"><div class="cloak-option-name">None</div><div class="cloak-option-url">default</div></div>
-								</div>
-								<div class="cloak-option" data-title="Google" data-favicon="https://www.google.com/favicon.ico" data-cloak="google">
-									<div class="cloak-option-icon">🔍</div>
-									<div class="cloak-option-info"><div class="cloak-option-name">Google</div><div class="cloak-option-url">google.com</div></div>
-								</div>
-								<div class="cloak-option" data-title="Google Classroom" data-favicon="https://ssl.gstatic.com/classroom/favicon.png" data-cloak="classroom">
-									<div class="cloak-option-icon">🎓</div>
-									<div class="cloak-option-info"><div class="cloak-option-name">Google Classroom</div><div class="cloak-option-url">classroom.google.com</div></div>
-								</div>
-								<div class="cloak-option" data-title="Clever" data-favicon="https://assets.clever.com/resource-icons/apps/favicon.ico" data-cloak="clever">
-									<div class="cloak-option-icon">📚</div>
-									<div class="cloak-option-info"><div class="cloak-option-name">Clever</div><div class="cloak-option-url">clever.com</div></div>
-								</div>
-								<div class="cloak-option" data-title="Khan Academy" data-favicon="https://www.khanacademy.org/favicon.ico" data-cloak="khan">
-									<div class="cloak-option-icon">🟢</div>
-									<div class="cloak-option-info"><div class="cloak-option-name">Khan Academy</div><div class="cloak-option-url">khanacademy.org</div></div>
-								</div>
-								<div class="cloak-option" data-title="Schoology" data-favicon="https://asset-cdn.schoology.com/sites/all/themes/schoology_theme/favicon.ico" data-cloak="schoology">
-									<div class="cloak-option-icon">📝</div>
-									<div class="cloak-option-info"><div class="cloak-option-name">Schoology</div><div class="cloak-option-url">schoology.com</div></div>
-								</div>
-							</div>
-							<div class="settings-note">disguises the tab title and favicon.</div>
-						</div>
-
-						<div class="settings-section">
-							<div class="settings-section-label">about:blank</div>
-							<button class="ab-btn" id="ab-btn">
-								<span class="ab-btn-icon">⬡</span>
-								<div>
-									<div class="ab-btn-name">open in about:blank</div>
-									<div class="ab-btn-desc">hides the url in a blank popup</div>
-								</div>
-							</button>
-							<div class="settings-note">opens proxy pages in an about:blank window.</div>
-						</div>
-
-						<div class="settings-section">
-							<div class="settings-section-label">theme</div>
-							<div class="theme-options" id="theme-options">
-								<div class="theme-option selected" data-theme="default">
-									<div class="theme-swatch swatch-default"></div>
-									<div>
-										<div style="font-size:11px;color:var(--text-bright)">Default</div>
-										<div style="font-size:9px;color:var(--text-muted)">green terminal</div>
-									</div>
-								</div>
-								<div class="theme-option" data-theme="nexora">
-									<div class="theme-swatch swatch-nexora"></div>
-									<div>
-										<div style="font-size:11px;color:var(--text-bright)">Nexora</div>
-										<div style="font-size:9px;color:var(--text-muted)">orange + stars</div>
-									</div>
-								</div>
-								<div class="theme-option" data-theme="wave">
-									<div class="theme-swatch swatch-wave"></div>
-									<div>
-										<div style="font-size:11px;color:var(--text-bright)">Wave</div>
-										<div style="font-size:9px;color:var(--text-muted)">flowing lines</div>
-									</div>
-								</div>
-								<div class="theme-option" data-theme="void">
-									<div class="theme-swatch swatch-void"></div>
-									<div>
-										<div style="font-size:11px;color:var(--text-bright)">Void</div>
-										<div style="font-size:9px;color:var(--text-muted)">black + white waves</div>
-									</div>
-								</div>
-							</div>
-						</div>
-
-					</div>
-				</div>
+				<div id="settings-panel"></div><!-- kept for legacy JS, hidden via CSS -->
 			</div>
 		</div>
+
+		<!-- ── SETTINGS FAB ── -->
+		<button id="settings-fab" title="Settings">⚙</button>
+
+		<!-- ── SETTINGS DRAWER OVERLAY ── -->
+		<div id="settings-overlay">
+			<div id="settings-drawer">
+
+				<!-- topbar (dynamic) -->
+				<div class="drawer-topbar" id="drawer-topbar">
+					<button class="drawer-back-btn" id="drawer-back" style="display:none">← back</button>
+					<span class="drawer-page-title" id="drawer-title">// settings</span>
+					<button class="drawer-close-btn" id="drawer-close" title="Close">✕</button>
+				</div>
+
+				<div class="drawer-body">
+
+					<!-- PAGE: main -->
+					<div class="drawer-page active" id="dpage-main">
+						<div class="settings-nav">
+							<div class="settings-nav-item" data-goto="dpage-appearance">
+								<span class="settings-nav-icon">🎨</span>
+								<div>
+									<div>Appearance</div>
+									<div class="settings-nav-desc">themes &amp; visual style</div>
+								</div>
+								<span class="settings-nav-arrow">›</span>
+							</div>
+							<div class="settings-nav-item" data-goto="dpage-cloak">
+								<span class="settings-nav-icon">🔒</span>
+								<div>
+									<div>Tab Cloak</div>
+									<div class="settings-nav-desc">disguise tab title &amp; icon</div>
+								</div>
+								<span class="settings-nav-arrow">›</span>
+							</div>
+							<div class="settings-nav-item" data-goto="dpage-privacy">
+								<span class="settings-nav-icon">🌐</span>
+								<div>
+									<div>Privacy</div>
+									<div class="settings-nav-desc">about:blank &amp; proxy</div>
+								</div>
+								<span class="settings-nav-arrow">›</span>
+							</div>
+							<div class="settings-nav-item" data-goto="dpage-about">
+								<span class="settings-nav-icon">ℹ</span>
+								<div>
+									<div>About</div>
+									<div class="settings-nav-desc">version, proxy, credits</div>
+								</div>
+								<span class="settings-nav-arrow">›</span>
+							</div>
+						</div>
+
+						<div class="dsection-label">community</div>
+						<a href="https://discord.gg/TYPE_HERE" target="_blank" class="drawer-link-btn discord-btn">
+							<div class="discord-icon">D</div>
+							<div>
+								<div>Join our Discord</div>
+								<div style="font-size:10px;color:#7289da;margin-top:2px;">discord.gg/TYPE_HERE</div>
+							</div>
+							<span class="settings-nav-arrow" style="margin-left:auto">↗</span>
+						</a>
+					</div>
+
+					<!-- PAGE: appearance (themes) -->
+					<div class="drawer-page" id="dpage-appearance">
+						<div class="dsection-label">theme</div>
+						<div class="theme-options" id="theme-options">
+							<div class="theme-option selected" data-theme="default">
+								<div class="theme-swatch swatch-default"></div>
+								<div>
+									<div style="font-size:11px;color:var(--text-bright)">Index's Theme</div>
+									<div style="font-size:9px;color:var(--text-muted)">green terminal</div>
+								</div>
+							</div>
+							<div class="theme-option" data-theme="nexora">
+								<div class="theme-swatch swatch-nexora"></div>
+								<div>
+									<div style="font-size:11px;color:var(--text-bright)">Nexora</div>
+									<div style="font-size:9px;color:var(--text-muted)">orange + stars</div>
+								</div>
+							</div>
+							<div class="theme-option" data-theme="wave">
+								<div class="theme-swatch swatch-wave"></div>
+								<div>
+									<div style="font-size:11px;color:var(--text-bright)">Aspen's Theme</div>
+									<div style="font-size:9px;color:var(--text-muted)">flowing lines</div>
+								</div>
+							</div>
+							<div class="theme-option" data-theme="void">
+								<div class="theme-swatch swatch-void"></div>
+								<div>
+									<div style="font-size:11px;color:var(--text-bright)">Void</div>
+									<div style="font-size:9px;color:var(--text-muted)">black + white waves</div>
+								</div>
+							</div>
+							<div class="theme-option" data-theme="fern">
+								<div class="theme-swatch swatch-fern"></div>
+								<div>
+									<div style="font-size:11px;color:var(--text-bright)">Fern's Theme</div>
+									<div style="font-size:9px;color:var(--text-muted)">stars + constellations</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- PAGE: cloak -->
+					<div class="drawer-page" id="dpage-cloak">
+						<div class="dsection-label">tab cloak</div>
+						<div class="cloak-options" id="cloak-options">
+							<div class="cloak-option selected" data-title="Index" data-favicon="" data-cloak="none">
+								<div class="cloak-option-icon">🌿</div>
+								<div class="cloak-option-info"><div class="cloak-option-name">None</div><div class="cloak-option-url">default</div></div>
+							</div>
+							<div class="cloak-option" data-title="Google" data-favicon="https://www.google.com/favicon.ico" data-cloak="google">
+								<div class="cloak-option-icon">🔍</div>
+								<div class="cloak-option-info"><div class="cloak-option-name">Google</div><div class="cloak-option-url">google.com</div></div>
+							</div>
+							<div class="cloak-option" data-title="Google Classroom" data-favicon="https://ssl.gstatic.com/classroom/favicon.png" data-cloak="classroom">
+								<div class="cloak-option-icon">🎓</div>
+								<div class="cloak-option-info"><div class="cloak-option-name">Google Classroom</div><div class="cloak-option-url">classroom.google.com</div></div>
+							</div>
+							<div class="cloak-option" data-title="Clever" data-favicon="https://assets.clever.com/resource-icons/apps/favicon.ico" data-cloak="clever">
+								<div class="cloak-option-icon">📚</div>
+								<div class="cloak-option-info"><div class="cloak-option-name">Clever</div><div class="cloak-option-url">clever.com</div></div>
+							</div>
+							<div class="cloak-option" data-title="Khan Academy" data-favicon="https://www.khanacademy.org/favicon.ico" data-cloak="khan">
+								<div class="cloak-option-icon">🟢</div>
+								<div class="cloak-option-info"><div class="cloak-option-name">Khan Academy</div><div class="cloak-option-url">khanacademy.org</div></div>
+							</div>
+							<div class="cloak-option" data-title="Schoology" data-favicon="https://asset-cdn.schoology.com/sites/all/themes/schoology_theme/favicon.ico" data-cloak="schoology">
+								<div class="cloak-option-icon">📝</div>
+								<div class="cloak-option-info"><div class="cloak-option-name">Schoology</div><div class="cloak-option-url">schoology.com</div></div>
+							</div>
+						</div>
+						<div class="dsection-note">changes the tab title and favicon — won't affect other users.</div>
+					</div>
+
+					<!-- PAGE: privacy -->
+					<div class="drawer-page" id="dpage-privacy">
+						<div class="dsection-label">about:blank</div>
+						<button class="ab-btn" id="ab-btn">
+							<span class="ab-btn-icon">⬡</span>
+							<div>
+								<div class="ab-btn-name">Open in about:blank</div>
+								<div class="ab-btn-desc">hides the url in a blank popup window</div>
+							</div>
+						</button>
+						<div class="dsection-note">opens proxy pages in a popup showing about:blank in the address bar.</div>
+					</div>
+
+					<!-- PAGE: about -->
+					<div class="drawer-page" id="dpage-about">
+						<div class="about-logo">
+							<div class="about-logo-mark">⬡</div>
+							<div>
+								<div class="about-logo-name">Index</div>
+								<div class="about-logo-tag">web proxy &amp; browser</div>
+							</div>
+						</div>
+
+						<div class="about-desc">
+							Index is a proxy website, used for bypassing school restrictions and accessing blocked content. We use iframes, so some sitese may not load images and/or videos. Join the discord for many suggestings, or any issues/questions you have!
+						</div>
+
+						<div class="about-row">
+							<span class="about-row-label">proxy engine</span>
+							<span class="about-row-val">ScramJet {experimental}<span class="about-badge">active</span></span>
+						</div>
+						<div class="about-row">
+							<span class="about-row-label">transport</span>
+						</div>
+						<div class="about-row">
+							<span class="about-row-label">version</span>
+							<span class="about-row-val">v0.0.6</span>
+						</div>
+						<div class="about-row">
+							<span class="about-row-label">max tabs</span>
+							<span class="about-row-val">20</span>
+						</div>
+
+						<div class="dsection-label" style="margin-top:20px;">scramjet</div>
+						<div class="about-desc">
+							Index is a proxy website our team is still developing. We made since we got blocked from google sites, in which is what he hosted our own games sites. Now, we brought the sites to a real domain and proxy search. Yes, these will get blocked since schools are strict, but that doesn't mean we can't continue to develop and expand our project. This is a side-project for us, and we have fun working on it. We hope you have fun using it, and if you have any suggestions or want to contribute, join our discord!
+						</div>
+
+						<a href="https://discord.gg/TYPE_HERE" target="_blank" class="drawer-link-btn discord-btn" style="margin-top:4px;">
+							<div class="discord-icon">D</div>
+							<div>
+								<div>Join our Discord</div>
+								<div style="font-size:10px;color:#7289da;margin-top:2px;">community &amp; support</div>
+							</div>
+							<span style="margin-left:auto;color:var(--text-dim)">↗</span>
+						</a>
+					</div>
+
+				</div><!-- /drawer-body -->
+			</div><!-- /settings-drawer -->
+		</div><!-- /settings-overlay -->
 
 		<script>
 		"use strict";
 
-		/* ─────────────────────────────────────────
-		   CANVAS / THEME SYSTEM
-		───────────────────────────────────────── */
+		/* ══════════════════════════════════════════
+		   CANVAS / THEMES  (unchanged from original)
+		══════════════════════════════════════════ */
 		const canvas = document.getElementById("bg-canvas");
 		const ctx    = canvas.getContext("2d");
 		let currentTheme = "default";
@@ -676,6 +277,51 @@
 			};
 		});
 		let waveT = 0;
+
+		const fernNodes = Array.from({length: 40}, () => ({
+			x: Math.random() * window.innerWidth,
+			y: Math.random() * window.innerHeight,
+			vx: (Math.random() - 0.5) * 0.3,
+			vy: (Math.random() - 0.5) * 0.3,
+			r: Math.random() * 1.5 + 0.5,
+		}));
+
+		const fernStars = Array.from({length: 120}, () => ({
+			x: Math.random(), y: Math.random(),
+			r: Math.random() * 1.2 + 0.3,
+			opacity: Math.random() * 0.6 + 0.2,
+			twinkleOffset: Math.random() * Math.PI * 2,
+		}));
+
+		let shootingStars = [];
+		let fernShootingTimer = 0;
+
+		function spawnShootingStar() {
+			shootingStars.push({
+				x: Math.random() * canvas.width,
+				y: Math.random() * canvas.height * 0.5,
+				len: 80 + Math.random() * 120,
+				speed: 8 + Math.random() * 6,
+				angle: Math.PI / 5 + (Math.random() - 0.5) * 0.3,
+				life: 1.0,
+				decay: 0.018 + Math.random() * 0.012,
+			});
+		}
+
+		canvas.addEventListener("click", function(e) {
+			if (currentTheme !== "fern") return;
+			for (let i = 0; i < 3; i++) {
+				shootingStars.push({
+					x: e.clientX - 30 + Math.random() * 60,
+					y: e.clientY - 20 + Math.random() * 40,
+					len: 60 + Math.random() * 100,
+					speed: 6 + Math.random() * 8,
+					angle: Math.PI / 5 + (Math.random() - 0.5) * 0.6,
+					life: 1.0,
+					decay: 0.022 + Math.random() * 0.015,
+				});
+			}
+		});
 
 		window.addEventListener("mousemove", e => {
 			mouseX = e.clientX / window.innerWidth;
@@ -768,9 +414,7 @@
 				const t = li / TOTAL_LINES;
 				const isAccent = li >= TOTAL_LINES - 3;
 				const accentStrength = isAccent ? (li - (TOTAL_LINES - 3)) / 3 : 0;
-				const alpha = isAccent
-					? 0.55 + accentStrength * 0.45
-					: 0.04 + t * 0.18;
+				const alpha = isAccent ? 0.55 + accentStrength * 0.45 : 0.04 + t * 0.18;
 				ctx.beginPath();
 				ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
 				ctx.lineWidth = isAccent ? 1.2 + accentStrength * 1.0 : 0.5;
@@ -795,13 +439,88 @@
 			animFrame = requestAnimationFrame(drawVoid);
 		}
 
+		function drawFern() {
+			const W = canvas.width, H = canvas.height;
+			ctx.clearRect(0, 0, W, H);
+			ctx.fillStyle = "#000000";
+			ctx.fillRect(0, 0, W, H);
+			const now = Date.now() * 0.001;
+			for (const s of fernStars) {
+				const twinkle = 0.6 + 0.4 * Math.sin(now * 1.2 + s.twinkleOffset);
+				ctx.beginPath();
+				ctx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2);
+				ctx.fillStyle = `rgba(255,255,255,${s.opacity * twinkle})`;
+				ctx.fill();
+			}
+			const mx = mouseX * W, my = mouseY * H;
+			for (const n of fernNodes) {
+				const dx = n.x - mx, dy = n.y - my;
+				const dist = Math.sqrt(dx * dx + dy * dy);
+				if (dist < 100 && dist > 0) {
+					const force = (100 - dist) / 100 * 0.4;
+					n.vx += (dx / dist) * force;
+					n.vy += (dy / dist) * force;
+				}
+				const speed = Math.sqrt(n.vx * n.vx + n.vy * n.vy);
+				if (speed > 1.2) { n.vx = (n.vx / speed) * 1.2; n.vy = (n.vy / speed) * 1.2; }
+				n.x += n.vx; n.y += n.vy;
+				if (n.x < 0) n.x = W; if (n.x > W) n.x = 0;
+				if (n.y < 0) n.y = H; if (n.y > H) n.y = 0;
+			}
+			for (let i = 0; i < fernNodes.length; i++) {
+				for (let j = i + 1; j < fernNodes.length; j++) {
+					const dx = fernNodes[i].x - fernNodes[j].x;
+					const dy = fernNodes[i].y - fernNodes[j].y;
+					const dist = Math.sqrt(dx * dx + dy * dy);
+					if (dist < 160) {
+						ctx.beginPath();
+						ctx.strokeStyle = `rgba(255,255,255,${(1 - dist / 160) * 0.18})`;
+						ctx.lineWidth = 0.5;
+						ctx.moveTo(fernNodes[i].x, fernNodes[i].y);
+						ctx.lineTo(fernNodes[j].x, fernNodes[j].y);
+						ctx.stroke();
+					}
+				}
+			}
+			for (const n of fernNodes) {
+				ctx.beginPath();
+				ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+				ctx.fillStyle = "rgba(255,255,255,0.5)";
+				ctx.fill();
+			}
+			fernShootingTimer++;
+			if (fernShootingTimer > 180 + Math.random() * 240) {
+				spawnShootingStar();
+				fernShootingTimer = 0;
+			}
+			shootingStars = shootingStars.filter(s => s.life > 0);
+			for (const s of shootingStars) {
+				const tx = s.x + Math.cos(s.angle) * s.len;
+				const ty = s.y + Math.sin(s.angle) * s.len;
+				const grad = ctx.createLinearGradient(s.x, s.y, tx, ty);
+				grad.addColorStop(0, `rgba(255,255,255,0)`);
+				grad.addColorStop(0.3, `rgba(255,255,255,${s.life * 0.6})`);
+				grad.addColorStop(1, `rgba(255,255,255,${s.life})`);
+				ctx.beginPath();
+				ctx.strokeStyle = grad;
+				ctx.lineWidth = 1.5;
+				ctx.moveTo(s.x, s.y);
+				ctx.lineTo(tx, ty);
+				ctx.stroke();
+				s.x += Math.cos(s.angle) * s.speed;
+				s.y += Math.sin(s.angle) * s.speed;
+				s.life -= s.decay;
+			}
+			animFrame = requestAnimationFrame(drawFern);
+		}
+
 		function stopAnim() {
 			if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
 		}
 
 		function applyTheme(theme) {
 			stopAnim();
-			document.body.classList.remove("theme-nexora", "theme-wave", "theme-void");
+			document.body.classList.remove("theme-nexora", "theme-wave", "theme-void", "theme-fern");
 			currentTheme = theme;
 			localStorage.setItem("theme", theme);
 			document.querySelectorAll(".theme-option").forEach(o => {
@@ -817,6 +536,11 @@
 			} else if (theme === "void") {
 				document.body.classList.add("theme-void");
 				drawVoid();
+			} else if (theme === "fern") {
+				document.body.classList.add("theme-fern");
+				shootingStars = [];
+				fernShootingTimer = 0;
+				drawFern();
 			}
 			updateQuickAppColors();
 		}
@@ -824,9 +548,7 @@
 		function updateQuickAppColors() {
 			const color = getComputedStyle(document.documentElement).getPropertyValue("--green").trim() || "#4ab464";
 			document.querySelectorAll(".quick-app-icon svg path, .quick-app-icon svg polygon").forEach(el => {
-				if (el.getAttribute("fill") && el.getAttribute("fill") !== "none") {
-					el.setAttribute("fill", color);
-				}
+				if (el.getAttribute("fill") && el.getAttribute("fill") !== "none") el.setAttribute("fill", color);
 			});
 		}
 
@@ -836,9 +558,9 @@
 			applyTheme(opt.dataset.theme);
 		});
 
-		/* ─────────────────────────────────────────
-		   CLOAK SYSTEM
-		───────────────────────────────────────── */
+		/* ══════════════════════════════════════════
+		   CLOAK
+		══════════════════════════════════════════ */
 		let currentCloak = { title: "Index", favicon: "", cloak: "none" };
 
 		function applyCloak(title, favicon) {
@@ -858,6 +580,9 @@
 			localStorage.setItem("cloak", JSON.stringify(currentCloak));
 		});
 
+		/* ══════════════════════════════════════════
+		   ABOUT:BLANK
+		══════════════════════════════════════════ */
 		document.getElementById("ab-btn").addEventListener("click", function() {
 			const entry = tabs.get(activeId);
 			let url = null;
@@ -898,17 +623,71 @@
 			win.document.close();
 		}
 
-		/* ─────────────────────────────────────────
-		   SETTINGS PANEL
-		───────────────────────────────────────── */
-		const settingsBtn   = document.getElementById("settings-btn");
-		const settingsPanel = document.getElementById("settings-panel");
+		/* ══════════════════════════════════════════
+		   DRAWER NAVIGATION
+		══════════════════════════════════════════ */
+		const overlay    = document.getElementById("settings-overlay");
+		const fab        = document.getElementById("settings-fab");
+		const drawerBack = document.getElementById("drawer-back");
+		const drawerTitle= document.getElementById("drawer-title");
+		const drawerClose= document.getElementById("drawer-close");
 
-		settingsBtn.addEventListener("click", function() {
-			const open = settingsPanel.classList.toggle("open");
-			settingsBtn.classList.toggle("active", open);
+		const PAGE_TITLES = {
+			"dpage-main":       "// settings",
+			"dpage-appearance": "// appearance",
+			"dpage-cloak":      "// tab cloak",
+			"dpage-privacy":    "// privacy",
+			"dpage-about":      "// about",
+		};
+
+		let pageHistory = ["dpage-main"];
+
+		function showPage(pageId) {
+			document.querySelectorAll(".drawer-page").forEach(p => p.classList.remove("active"));
+			document.getElementById(pageId).classList.add("active");
+			drawerTitle.textContent = PAGE_TITLES[pageId] || "// settings";
+			drawerBack.style.display = pageHistory.length > 1 ? "inline-flex" : "none";
+		}
+
+		function gotoPage(pageId) {
+			pageHistory.push(pageId);
+			showPage(pageId);
+		}
+
+		drawerBack.addEventListener("click", () => {
+			if (pageHistory.length <= 1) return;
+			pageHistory.pop();
+			showPage(pageHistory[pageHistory.length - 1]);
 		});
 
+		document.querySelectorAll(".settings-nav-item[data-goto]").forEach(item => {
+			item.addEventListener("click", () => gotoPage(item.dataset.goto));
+		});
+
+		fab.addEventListener("click", () => {
+			const open = overlay.classList.toggle("open");
+			fab.classList.toggle("active", open);
+			if (open) {
+				pageHistory = ["dpage-main"];
+				showPage("dpage-main");
+			}
+		});
+
+		overlay.addEventListener("click", e => {
+			if (e.target === overlay) {
+				overlay.classList.remove("open");
+				fab.classList.remove("active");
+			}
+		});
+
+		drawerClose.addEventListener("click", () => {
+			overlay.classList.remove("open");
+			fab.classList.remove("active");
+		});
+
+		/* ══════════════════════════════════════════
+		   RESTORE SETTINGS
+		══════════════════════════════════════════ */
 		(function restoreSettings() {
 			const savedCloak = localStorage.getItem("cloak");
 			if (savedCloak) {
@@ -925,21 +704,41 @@
 			applyTheme(savedTheme);
 		})();
 
-		/* ─────────────────────────────────────────
-		   QUICK APPS
-		───────────────────────────────────────── */
+		/* ══════════════════════════════════════════
+		   QUICK APPS / APPS REGISTRY (unchanged)
+		══════════════════════════════════════════ */
 		const QUICK_APPS = [
-			{ name: "duckduckgo", url: "https://www.duckduckgo.com",                  icon: `<svg viewBox="0 0 24 24" width="18" height="18"><circle cx="12" cy="10" r="7" fill="#4ab464"/><circle cx="12" cy="10" r="4.5" fill="#111211"/><circle cx="10.5" cy="8.5" r="1.2" fill="#fff"/><ellipse cx="12" cy="17.5" rx="2.5" ry="3.5" fill="#4ab464"/></svg>` },
-			{ name: "youtube",    url: "https://www.youtube.com",                      icon: `<svg viewBox="0 0 24 24" width="18" height="18"><path fill="#4ab464" d="M23 7s-.3-1.9-1.1-2.7c-1-.7-2.2-.8-2.7-.8C16.4 3.3 12 3.3 12 3.3s-4.4 0-7.2.2c-.5.1-1.7.1-2.7.8C1.3 5.1 1 7 1 7S.7 9.2.7 11.4v2.1c0 2.2.3 4.4.3 4.4s.3 1.9 1.1 2.7c1 .7 2.4.7 3 .8C7 21.5 12 21.5 12 21.5s4.4 0 7.2-.3c.5-.1 1.7-.1 2.7-.8.8-.8 1.1-2.7 1.1-2.7s.3-2.2.3-4.4v-2.1C23.3 9.2 23 7 23 7z"/><polygon fill="#111211" points="9.7,15.5 9.7,8.4 16.3,12"/></svg>` },
-			{ name: "tiktok",     url: "https://www.tiktok.com",                       icon: `<svg viewBox="0 0 24 24" width="18" height="18"><path fill="#4ab464" d="M19.6 3h-3v11.4a2.6 2.6 0 1 1-2.6-2.6c.24 0 .47.03.7.08V8.76a6.4 6.4 0 1 0 5.6 6.34V8.24A9.3 9.3 0 0 0 24 9.1V6.16A6.4 6.4 0 0 1 19.6 3z"/></svg>` },
-			{ name: "chatgpt",    url: "https://chat.openai.com",                      icon: `<svg viewBox="0 0 24 24" width="18" height="18"><path fill="#4ab464" d="M21 9a6 6 0 0 0-3.5-5.5A6 6 0 0 0 6.8 5.3 6 6 0 0 0 3 10a6 6 0 0 0 .8 3 6 6 0 0 0 3.5 5.5A6 6 0 0 0 17.2 18a6 6 0 0 0 3.8-4.7A6 6 0 0 0 21 9zm-9 7.5a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9zm0-7a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z"/></svg>` },
-			{ name: "music",      url: "https://freefy.app/",                          icon: `<svg viewBox="0 0 24 24" width="18" height="18"><path fill="#4ab464" d="M9 3v12.26A3.5 3.5 0 1 0 11 18V7h6V3H9zm-2.5 17a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>` },
-			{ name: "movies",     url: "https://www.justwatch.com/ca/provider/free-all/", icon: `<svg viewBox="0 0 24 24" width="18" height="18"><path fill="#4ab464" d="M4 3h16a1 1 0 0 1 1 1v1H3V4a1 1 0 0 1 1-1zm17 3H3v13a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V6z"/><line stroke="#4ab464" stroke-width="1.5" x1="3" y1="10" x2="21" y2="10"/><line stroke="#4ab464" stroke-width="1.5" x1="7" y1="6" x2="7" y2="19"/><line stroke="#4ab464" stroke-width="1.5" x1="12" y1="6" x2="12" y2="19"/><line stroke="#4ab464" stroke-width="1.5" x1="17" y1="6" x2="17" y2="19"/></svg>` },
+			{ name: "duckduckgo",      url: "https://www.duckduckgo.com",                     icon: `<img src="/icons/DDG-Favicon.png"  width="25" height="25" style="border-radius:2px;object-fit:contain;" />` },
+			{ name: "youtube",         url: "https://www.youtube.com",                         icon: `<img src="/icons/YT-Favicon.png"   width="25" height="25" style="border-radius:2px;object-fit:contain;" />` },
+			{ name: "tiktok",          url: "https://www.tiktok.com",                          icon: `<img src="/icons/TT-Favicon.png"   width="25" height="25" style="border-radius:2px;object-fit:contain;" />` },
+			{ name: "discord",         url: "https://www.discord.com",                         icon: `<img src="/icons/DC-Favicon.png"   width="25" height="25" style="border-radius:2px;object-fit:contain;" />` },
+			{ name: "Cool Math Games", url: "https://www.coolmathgames.com",                   icon: `<img src="/icons/CMG-Favicon.jpg"  width="25" height="25" style="border-radius:2px;object-fit:contain;" />` },
+			{ name: "x [twitter]",     url: "https://www.x.com",                               icon: `<img src="/icons/X-Favicon.jpg"   width="25" height="24" style="border-radius:2px;object-fit:contain;" />` },
+			{ name: "chatgpt",         url: "https://chat.openai.com",                         icon: `<img src="/icons/CGPT-Favicon.png" width="25" height="25" style="border-radius:2px;object-fit:contain;" />` },
+			{ name: "music",           url: "https://freefy.app/",                             icon: `<img src="/icons/MCTF-Favicon.png" width="25" height="25" style="border-radius:2px;object-fit:contain;" />` },
+			{ name: "movies",          url: "https://www.justwatch.com/ca/provider/free-all/", icon: `<img src="/icons/MP4-Favicon.webp" width="25" height="25" style="border-radius:2px;object-fit:contain;" />` },
 		];
 
-		/* ─────────────────────────────────────────
-		   PROXY / SCRAMJET
-		───────────────────────────────────────── */
+		const APPS_REGISTRY = [
+			{ name: "Google",          url: "https://www.google.com",          icon: `<img src="/icons/G-Favicon.png"   width="32" height="32" style="border-radius:6px;object-fit:contain;" />`, description: "Search the web",           tags: ["search","google"] },
+			{ name: "YouTube",         url: "https://www.youtube.com",         icon: `<img src="/icons/YT-Favicon.png"  width="32" height="32" style="border-radius:6px;object-fit:contain;" />`, description: "Watch videos",             tags: ["video","media"] },
+			{ name: "Discord",         url: "https://discord.com/app",         icon: `<img src="/icons/DC-Favicon.png"  width="32" height="32" style="border-radius:6px;object-fit:contain;" />`, description: "Chat with friends",        tags: ["social","chat"] },
+			{ name: "Spotify",         url: "https://open.spotify.com",        icon: `<img src="/icons/S-Favicon.png"   width="32" height="32" style="border-radius:6px;object-fit:contain;" />`, description: "Stream music",             tags: ["music","media"] },
+			{ name: "Monochrome.tf",   url: "https://monochrome.tf",           icon: `<img src="/icons/MCTF-Favicon.png" width="32" height="32" style="border-radius:6px;object-fit:contain;" />`, description: "Stream music",            tags: ["music","media"] },
+			{ name: "Reddit",          url: "https://www.reddit.com",          icon: `<img src="/icons/RDT-Favicon.png" width="32" height="32" style="border-radius:6px;object-fit:contain;" />`, description: "Browse communities",       tags: ["social","news"] },
+			{ name: "X / Twitter",     url: "https://www.x.com",               icon: `<img src="/icons/X-Favicon.jpg"   width="32" height="32" style="border-radius:6px;object-fit:contain;" />`, description: "Trending topics & posts", tags: ["social","news"] },
+			{ name: "TikTok",          url: "https://www.tiktok.com",          icon: `<img src="/icons/TT-Favicon.png"  width="32" height="32" style="border-radius:6px;object-fit:contain;" />`, description: "Short-form videos",        tags: ["video","social"] },
+			{ name: "ChatGPT",         url: "https://chat.openai.com",         icon: `<img src="/icons/CGPT-Favicon.png" width="32" height="32" style="border-radius:6px;object-fit:contain;" />`, description: "AI assistant by OpenAI", tags: ["ai","tools"] },
+			{ name: "Crazy Games",     url: "https://www.crazygames.com/",         icon: `<img src="/icons/CZG-Favicon.png" width="32" height="32" style="border-radius:6px;object-fit:contain;" />`, description: "Online games for all.", tags: ["games","dev"] },
+			{ name: "Gmail",           url: "https://mail.google.com",         icon: `<img src="https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico" width="32" height="32" style="border-radius:6px;object-fit:contain;" />`, description: "Email by Google", tags: ["productivity","google"] },
+			{ name: "DuckDuckGo",      url: "https://www.duckduckgo.com",      icon: `<img src="/icons/DDG-Favicon.png"  width="32" height="32" style="border-radius:6px;object-fit:contain;" />`, description: "Private search",          tags: ["search"] },
+			{ name: "Bing",            url: "https://www.bing.com",            icon: `<img src="/icons/BNG-Favicon.png"  width="32" height="32" style="border-radius:6px;object-fit:contain;" />`, description: "Microsoft search",         tags: ["search"] },
+			{ name: "GitHub",          url: "https://github.com",              icon: `<img src="/icons/GH-Favicon.png"   width="32" height="32" style="border-radius:6px;object-fit:contain;" />`, description: "Code & collaboration",     tags: ["tools","dev"] },
+			{ name: "Replit",          url: "https://replit.com",              icon: `<img src="/icons/RPT-Favicon.png"  width="32" height="32" style="border-radius:6px;object-fit:contain;" />`, description: "Code in the browser",      tags: ["tools","dev"] },
+			{ name: "Neal.fun",        url: "https://www.neal.fun",            icon: `<img src="/icons/NDF-Favicon.png"  width="32" height="32" style="border-radius:6px;object-fit:contain;" />`, description: "Many fun games.",          tags: ["games","education"] },
+			{ name: "Cool Math Games", url: "https://www.coolmathgames.com",   icon: `<img src="/icons/CMG-Favicon.jpg"  width="32" height="32" style="border-radius:6px;object-fit:contain;" />`, description: "Math-based browser games", tags: ["games","education"] },
+		];
+
 		const { ScramjetController } = $scramjetLoadController();
 		const scramjet = new ScramjetController({
 			files: { wasm: "/scram/scramjet.wasm.wasm", all: "/scram/scramjet.all.js", sync: "/scram/scramjet.sync.js" }
@@ -959,9 +758,9 @@
 			transportReady = true;
 		}
 
-		/* ─────────────────────────────────────────
-		   TAB SYSTEM
-		───────────────────────────────────────── */
+		/* ══════════════════════════════════════════
+		   TAB ENGINE (unchanged)
+		══════════════════════════════════════════ */
 		const tabBar     = document.getElementById("tab-bar");
 		const newTabBtn  = document.getElementById("new-tab-btn");
 		const tabContent = document.getElementById("tab-content");
@@ -979,27 +778,21 @@
 		function createTab(title) {
 			if (tabs.size >= 20) return;
 			const id = ++tabCounter;
-
 			const tabEl = document.createElement("div");
 			tabEl.className = "tab"; tabEl.dataset.id = id;
 			tabEl.innerHTML =
 				'<div class="tab-spinner"></div>' +
 				'<span class="tab-title">' + truncate(title || "new tab", 22) + '</span>' +
 				'<button class="tab-close" title="Close tab">\u2715</button>';
-
 			const paneEl = document.createElement("div");
 			paneEl.className = "tab-pane"; paneEl.dataset.id = id;
 			paneEl.innerHTML = getHomeHTML(id);
-
 			tabBar.insertBefore(tabEl, newTabBtn);
 			tabContent.appendChild(paneEl);
 			tabs.set(id, { tabEl, paneEl, frame: null });
-
 			wireHome(paneEl, id);
-
 			tabEl.addEventListener("click", e => { if (!e.target.classList.contains("tab-close")) activateTab(id); });
 			tabEl.querySelector(".tab-close").addEventListener("click", e => { e.stopPropagation(); closeTab(id); });
-
 			activateTab(id);
 			return id;
 		}
@@ -1026,24 +819,20 @@
 		async function navigateTab(id, url) {
 			const entry = tabs.get(id); if (!entry) return;
 			setTabLoading(id, true); setTabTitle(id, url);
-
 			try { await ensureTransport(); }
 			catch (err) {
 				setTabLoading(id, false); setTabTitle(id, "error");
 				entry.paneEl.innerHTML = '<div class="home-content"><div class="home-center"><p class="sj-error">failed to register service worker.</p><pre style="color:var(--text-dim);font-size:11px;">' + err.toString() + '</pre></div></div>';
 				return;
 			}
-
 			entry.paneEl.innerHTML = "";
 			if (!entry.frame) entry.frame = scramjet.createFrame();
 			entry.paneEl.appendChild(entry.frame.frame);
 			entry.frame.go(url);
-
 			entry.frame.frame.addEventListener("load", function() {
 				setTabLoading(id, false);
 				try { const t = entry.frame.frame.contentDocument?.title; if (t) setTabTitle(id, t); } catch(_) {}
 			}, { once: true });
-
 			let attempts = 0;
 			const poll = setInterval(() => {
 				attempts++;
@@ -1053,7 +842,7 @@
 		}
 
 		function buildQuickAppsHTML() {
-			let html = '<div class="quick-apps"><div class="quick-apps-label">quick access</div><div class="quick-apps-grid">';
+			let html = '<div class="quick-apps"><div class="quick-apps-label">quick apps</div><div class="quick-apps-grid">';
 			for (const app of QUICK_APPS) {
 				html += '<div class="quick-app" data-url="' + app.url + '"><div class="quick-app-icon">' + app.icon + '</div><span class="quick-app-name">' + app.name + '</span></div>';
 			}
@@ -1063,7 +852,6 @@
 		function getHomeHTML(id) {
 			return '<div class="home-content">' +
 				'<div class="home-center">' +
-				'<div class="index-wordmark">proxy</div>' +
 				'<div class="index-title"><span class="tw-text"></span><span class="index-cursor"></span></div>' +
 				'<div class="index-sub tw-sub"> </div>' +
 				'<form class="sj-form" data-tab="' + id + '" style="width:100%;max-width:560px;display:flex;flex-direction:column;align-items:center;">' +
@@ -1075,7 +863,6 @@
 				'</div><p class="sj-error"></p></form>' +
 				buildQuickAppsHTML() +
 				'</div>' +
-				'<footer class="home-footer"><span>index &copy; 2026</span></footer>' +
 				'</div>';
 		}
 
@@ -1094,21 +881,14 @@
 				el.addEventListener("click", () => navigateTab(id, el.dataset.url));
 			});
 
-			/* ── TYPEWRITER EFFECT ── */
 			const twEl  = paneEl.querySelector(".tw-text");
 			const twSub = paneEl.querySelector(".tw-sub");
 			if (!twEl) return;
-
 			const word  = "Index";
 			const fonts = [
-				"'Courier New', monospace",
-				"'Georgia', serif",
-				"'Impact', sans-serif",
-				"'Palatino Linotype', serif",
-				"'Lucida Console', monospace",
-				"'Trebuchet MS', sans-serif",
-				"'Garamond', serif",
-				"'Arial Narrow', sans-serif",
+				"'Courier New', monospace","'Georgia', serif","'Impact', sans-serif",
+				"'Palatino Linotype', serif","'Lucida Console', monospace",
+				"'Trebuchet MS', sans-serif","'Garamond', serif","'Arial Narrow', sans-serif",
 			];
 			let fontIndex = 0;
 
@@ -1116,45 +896,31 @@
 				const titleEl = paneEl.querySelector(".index-title");
 				if (titleEl) titleEl.style.fontFamily = fonts[fontIndex % fonts.length];
 				fontIndex++;
-
 				if (twSub) twSub.classList.remove("visible");
-
 				let i = 0;
 				function type() {
 					twEl.textContent = word.slice(0, i);
-					if (i < word.length) {
-						i++;
-						setTimeout(type, 80 + Math.random() * 70);
-					} else {
-						if (twSub) twSub.classList.add("visible");
-						setTimeout(deleteText, 2200);
-					}
+					if (i < word.length) { i++; setTimeout(type, 80 + Math.random() * 70); }
+					else { if (twSub) twSub.classList.add("visible"); setTimeout(deleteText, 2200); }
 				}
-
 				let j = word.length;
 				function deleteText() {
 					if (twSub) twSub.classList.remove("visible");
 					twEl.textContent = word.slice(0, j);
-					if (j > 0) {
-						j--;
-						setTimeout(deleteText, 55 + Math.random() * 40);
-					} else {
-						setTimeout(runCycle, 400);
-					}
+					if (j > 0) { j--; setTimeout(deleteText, 55 + Math.random() * 40); }
+					else { setTimeout(runCycle, 400); }
 				}
-
 				setTimeout(type, 400);
 			}
-
 			runCycle();
 		}
 
 		newTabBtn.addEventListener("click", () => createTab());
 		createTab();
 
-		/* ══════════════════════════════════════════════
-		   GAMES SYSTEM
-		══════════════════════════════════════════════ */
+		/* ══════════════════════════════════════════
+		   GAMES TAB (unchanged)
+		══════════════════════════════════════════ */
 		const gamesBtn = document.getElementById("games-btn");
 		let gamesTabId   = null;
 		let gamesRegistry = [];
@@ -1174,141 +940,179 @@
 		}
 
 		function buildGamesPage(tabId) {
-			const entry = tabs.get(tabId);
-			if (!entry) return;
-
+			const entry = tabs.get(tabId); if (!entry) return;
 			const allTags = getAllTags(gamesRegistry);
 			const total   = gamesRegistry.length;
-
 			const tagPills = ['<button class="games-tag active" data-tag="all">all</button>',
 				...allTags.map(t => `<button class="games-tag" data-tag="${t}">${t}</button>`)
 			].join("");
-
 			entry.paneEl.innerHTML = `
 			<div class="games-content">
 				<div class="games-topbar">
 					<span class="games-topbar-title">// games</span>
 					<div class="games-search-wrap">
 						<span class="games-search-icon">⌕</span>
-						<input class="games-search" id="games-search-input"
-							type="text" placeholder="search ${total} games…"
-							autocomplete="off" spellcheck="false" />
+						<input class="games-search" id="games-search-input" type="text" placeholder="search ${total} games…" autocomplete="off" spellcheck="false" />
 						<button class="games-search-clear" id="games-search-clear" title="clear">✕</button>
 					</div>
 					<span class="games-count-badge" id="games-count-badge">${total} games</span>
 					<button class="games-close-btn" id="games-close-btn">✕ close</button>
 				</div>
 				${allTags.length > 0 ? `<div class="games-tagbar" id="games-tagbar">${tagPills}</div>` : ""}
-				<div class="games-grid-area">
-					<div class="games-grid" id="games-grid"></div>
-				</div>
+				<div class="games-grid-area"><div class="games-grid" id="games-grid"></div></div>
 			</div>`;
-
 			renderCards(entry.paneEl, gamesRegistry);
-
 			const searchInput = entry.paneEl.querySelector("#games-search-input");
 			const searchClear = entry.paneEl.querySelector("#games-search-clear");
 			let   activeTag   = "all";
-
 			function applyFilters() {
 				const q = searchInput.value.trim().toLowerCase();
 				searchClear.classList.toggle("visible", q.length > 0);
 				const filtered = gamesRegistry.filter(g => {
-					const matchTag = activeTag === "all" || (g.tags || []).map(t=>t.toLowerCase()).includes(activeTag);
-					const matchQ   = !q ||
-						g.name.toLowerCase().includes(q) ||
-						(g.description || "").toLowerCase().includes(q) ||
-						(g.tags || []).some(t => t.toLowerCase().includes(q));
+					const matchTag = activeTag === "all" || (g.tags||[]).map(t=>t.toLowerCase()).includes(activeTag);
+					const matchQ   = !q || g.name.toLowerCase().includes(q) || (g.description||"").toLowerCase().includes(q) || (g.tags||[]).some(t=>t.toLowerCase().includes(q));
 					return matchTag && matchQ;
 				});
 				renderCards(entry.paneEl, filtered);
-				entry.paneEl.querySelector("#games-count-badge").textContent =
-					filtered.length === total ? `${total} games` : `${filtered.length} / ${total}`;
+				entry.paneEl.querySelector("#games-count-badge").textContent = filtered.length === total ? `${total} games` : `${filtered.length} / ${total}`;
 			}
-
 			searchInput.addEventListener("input", applyFilters);
-			searchClear.addEventListener("click", () => { searchInput.value = ""; applyFilters(); searchInput.focus(); });
-
+			searchClear.addEventListener("click", () => { searchInput.value=""; applyFilters(); searchInput.focus(); });
 			const tagbar = entry.paneEl.querySelector("#games-tagbar");
 			if (tagbar) {
 				tagbar.addEventListener("click", e => {
-					const btn = e.target.closest(".games-tag");
-					if (!btn) return;
+					const btn = e.target.closest(".games-tag"); if (!btn) return;
 					activeTag = btn.dataset.tag;
-					tagbar.querySelectorAll(".games-tag").forEach(b => b.classList.toggle("active", b === btn));
+					tagbar.querySelectorAll(".games-tag").forEach(b => b.classList.toggle("active", b===btn));
 					applyFilters();
 				});
 			}
-
-			entry.paneEl.querySelector("#games-close-btn").addEventListener("click", () => {
-				closeTab(tabId); gamesTabId = null;
-			});
+			entry.paneEl.querySelector("#games-close-btn").addEventListener("click", () => { closeTab(tabId); gamesTabId=null; });
 		}
 
 		function renderCards(paneEl, list) {
-			const grid = paneEl.querySelector("#games-grid");
-			if (!grid) return;
-			if (list.length === 0) {
-				grid.innerHTML = '<div class="games-noresults">no games match your search.<br><span style="opacity:0.5">try a different keyword or tag</span></div>';
-				return;
-			}
+			const grid = paneEl.querySelector("#games-grid"); if (!grid) return;
+			if (list.length === 0) { grid.innerHTML = '<div class="games-noresults">no games match your search.<br><span style="opacity:0.5">try a different keyword or tag</span></div>'; return; }
 			grid.innerHTML = list.map(g => {
-				const tagsHTML = (g.tags||[]).length
-					? `<div class="game-card-tags">${(g.tags).map(t=>`<span class="game-card-tag">${t}</span>`).join("")}</div>`
-					: "";
-				return `<div class="game-card" data-file="${g.file}" data-name="${g.name}">
-					<div class="game-card-icon">${g.icon || "🎮"}</div>
-					<div class="game-card-name">${g.name}</div>
-					${g.description ? `<div class="game-card-desc">${g.description}</div>` : ""}
-					${tagsHTML}
-				</div>`;
+				const tagsHTML = (g.tags||[]).length ? `<div class="game-card-tags">${(g.tags).map(t=>`<span class="game-card-tag">${t}</span>`).join("")}</div>` : "";
+				return `<div class="game-card" data-file="${g.file}" data-name="${g.name}"><div class="game-card-icon">${g.icon||"🎮"}</div><div class="game-card-name">${g.name}</div>${g.description?`<div class="game-card-desc">${g.description}</div>`:""}${tagsHTML}</div>`;
 			}).join("");
-
-			grid.querySelectorAll(".game-card").forEach(card => {
-				card.addEventListener("click", () => openGameModal(card.dataset.file, card.dataset.name));
-			});
+			grid.querySelectorAll(".game-card").forEach(card => { card.addEventListener("click", () => openGameModal(card.dataset.file, card.dataset.name)); });
 		}
 
-		const gameModal     = document.getElementById("game-modal");
-		const gmName        = document.getElementById("gm-name");
-		const gmFile        = document.getElementById("gm-file");
-		const gmIframe      = document.getElementById("gm-iframe");
-		const gmClose       = document.getElementById("gm-close");
-		const gmFullscreen  = document.getElementById("gm-fullscreen");
+		const gameModal    = document.getElementById("game-modal");
+		const gmName       = document.getElementById("gm-name");
+		const gmFile       = document.getElementById("gm-file");
+		const gmIframe     = document.getElementById("gm-iframe");
+		const gmClose      = document.getElementById("gm-close");
+		const gmFullscreen = document.getElementById("gm-fullscreen");
 
 		function openGameModal(file, name) {
-			gmName.textContent  = name;
-			gmFile.textContent  = file;
-			gmIframe.src        = `/games/${file}`;
+			gmName.textContent = name; gmFile.textContent = file;
+			gmIframe.src = `/games/${file}`;
 			gameModal.classList.add("open");
 		}
-
-		function closeGameModal() {
-			gameModal.classList.remove("open");
-			gmIframe.src = "about:blank";
-		}
-
+		function closeGameModal() { gameModal.classList.remove("open"); gmIframe.src="about:blank"; }
 		gmClose.addEventListener("click", closeGameModal);
-		document.addEventListener("keydown", e => { if (e.key === "Escape" && gameModal.classList.contains("open")) closeGameModal(); });
+		document.addEventListener("keydown", e => { if (e.key==="Escape" && gameModal.classList.contains("open")) closeGameModal(); });
 		gmFullscreen.addEventListener("click", () => {
 			if (gmIframe.requestFullscreen) gmIframe.requestFullscreen();
 			else if (gmIframe.webkitRequestFullscreen) gmIframe.webkitRequestFullscreen();
 		});
 
 		async function openGamesTab() {
-			if (gamesTabId && tabs.has(gamesTabId)) {
-				activateTab(gamesTabId);
-				gamesBtn.classList.add("active");
-				return;
-			}
+			if (gamesTabId && tabs.has(gamesTabId)) { activateTab(gamesTabId); gamesBtn.classList.add("active"); return; }
 			await loadGamesRegistry();
 			gamesTabId = createTab("🎮 games");
 			setTabTitle(gamesTabId, "🎮 games");
 			buildGamesPage(gamesTabId);
 			gamesBtn.classList.add("active");
 		}
-
 		gamesBtn.addEventListener("click", openGamesTab);
+
+		/* ══════════════════════════════════════════
+		   APPS TAB (unchanged)
+		══════════════════════════════════════════ */
+		const appsBtn = document.getElementById("apps-btn");
+		let appsTabId = null;
+
+		function getAllAppTags(registry) {
+			const set = new Set();
+			for (const a of registry) (a.tags||[]).forEach(t => set.add(t.toLowerCase()));
+			return [...set].sort();
+		}
+
+		function buildAppsPage(tabId) {
+			const entry = tabs.get(tabId); if (!entry) return;
+			const allTags = getAllAppTags(APPS_REGISTRY);
+			const total   = APPS_REGISTRY.length;
+			const tagPills = ['<button class="games-tag active" data-tag="all">all</button>',
+				...allTags.map(t => `<button class="games-tag" data-tag="${t}">${t}</button>`)
+			].join("");
+			entry.paneEl.innerHTML = `
+			<div class="games-content">
+				<div class="games-topbar">
+					<span class="games-topbar-title">// apps</span>
+					<div class="games-search-wrap">
+						<span class="games-search-icon">⌕</span>
+						<input class="games-search" id="apps-search-input" type="text" placeholder="search ${total} apps…" autocomplete="off" spellcheck="false" />
+						<button class="games-search-clear" id="apps-search-clear" title="clear">✕</button>
+					</div>
+					<span class="games-count-badge" id="apps-count-badge">${total} apps</span>
+					<button class="games-close-btn" id="apps-close-btn">✕ close</button>
+				</div>
+				<div class="games-tagbar" id="apps-tagbar">${tagPills}</div>
+				<div class="games-grid-area"><div class="games-grid" id="apps-grid"></div></div>
+			</div>`;
+			renderAppCards(entry.paneEl, APPS_REGISTRY, tabId);
+			const searchInput = entry.paneEl.querySelector("#apps-search-input");
+			const searchClear = entry.paneEl.querySelector("#apps-search-clear");
+			let   activeTag   = "all";
+			function applyFilters() {
+				const q = searchInput.value.trim().toLowerCase();
+				searchClear.classList.toggle("visible", q.length > 0);
+				const filtered = APPS_REGISTRY.filter(a => {
+					const matchTag = activeTag === "all" || (a.tags||[]).map(t=>t.toLowerCase()).includes(activeTag);
+					const matchQ   = !q || a.name.toLowerCase().includes(q) || (a.description||"").toLowerCase().includes(q) || (a.tags||[]).some(t=>t.toLowerCase().includes(q));
+					return matchTag && matchQ;
+				});
+				renderAppCards(entry.paneEl, filtered, tabId);
+				entry.paneEl.querySelector("#apps-count-badge").textContent = filtered.length===total ? `${total} apps` : `${filtered.length} / ${total}`;
+			}
+			searchInput.addEventListener("input", applyFilters);
+			searchClear.addEventListener("click", () => { searchInput.value=""; applyFilters(); searchInput.focus(); });
+			const tagbar = entry.paneEl.querySelector("#apps-tagbar");
+			if (tagbar) {
+				tagbar.addEventListener("click", e => {
+					const btn = e.target.closest(".games-tag"); if (!btn) return;
+					activeTag = btn.dataset.tag;
+					tagbar.querySelectorAll(".games-tag").forEach(b => b.classList.toggle("active", b===btn));
+					applyFilters();
+				});
+			}
+			entry.paneEl.querySelector("#apps-close-btn").addEventListener("click", () => { closeTab(tabId); appsTabId=null; appsBtn.classList.remove("active"); });
+		}
+
+		function renderAppCards(paneEl, list, tabId) {
+			const grid = paneEl.querySelector("#apps-grid"); if (!grid) return;
+			if (list.length===0) { grid.innerHTML='<div class="games-noresults">no apps match your search.<br><span style="opacity:0.5">try a different keyword or tag</span></div>'; return; }
+			grid.innerHTML = list.map(a => {
+				const tagsHTML = (a.tags||[]).length ? `<div class="game-card-tags">${(a.tags).map(t=>`<span class="game-card-tag">${t}</span>`).join("")}</div>` : "";
+				return `<div class="app-card game-card" data-url="${a.url}" data-name="${a.name}"><div class="game-card-icon app-card-icon">${a.icon}</div><div class="game-card-name">${a.name}</div>${a.description?`<div class="game-card-desc">${a.description}</div>`:""}${tagsHTML}</div>`;
+			}).join("");
+			grid.querySelectorAll(".app-card").forEach(card => {
+				card.addEventListener("click", () => { const newId=createTab(card.dataset.name); navigateTab(newId, card.dataset.url); });
+			});
+		}
+
+		function openAppsTab() {
+			if (appsTabId && tabs.has(appsTabId)) { activateTab(appsTabId); appsBtn.classList.add("active"); return; }
+			appsTabId = createTab("🗂 apps");
+			setTabTitle(appsTabId, "🗂 apps");
+			buildAppsPage(appsTabId);
+			appsBtn.classList.add("active");
+		}
+		appsBtn.addEventListener("click", openAppsTab);
 		</script>
 	</body>
 </html>

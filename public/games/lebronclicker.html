@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>LeBron Aura Clicker - GOAT Edition</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--gold:#FFD700;--gold2:#e8b800;--dark:#080808;--panel:#0f0f0f;--border:#2a2a2a;--red:#c0392b;--text:#e0e0e0;}
+html{scrollbar-width:thin;scrollbar-color:#222 #080808;}
+::-webkit-scrollbar{width:8px;}
+::-webkit-scrollbar-track{background:#080808;}
+::-webkit-scrollbar-thumb{background:#222;border-radius:4px;}
+body{font-family:'Barlow Condensed',sans-serif;background:#080808;color:var(--text);display:flex;justify-content:center;align-items:flex-start;min-height:100vh;user-select:none;overflow-x:hidden;}
+.bg-anim{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;pointer-events:none;overflow:hidden;}
+.particle{position:absolute;border-radius:50%;animation:particleFloat linear infinite;opacity:0;}
+@keyframes particleFloat{0%{transform:translateY(110vh) scale(0);opacity:0;}10%{opacity:0.4;}90%{opacity:0.4;}100%{transform:translateY(-10vh) scale(1.5);opacity:0;}}
+.scanline{position:fixed;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.12) 2px,rgba(0,0,0,0.12) 4px);pointer-events:none;z-index:9998;}
+.wrapper{display:flex;gap:0;width:100%;max-width:1120px;margin:0 auto;padding:16px;}
+.sidebar-left{width:245px;flex-shrink:0;display:flex;flex-direction:column;gap:10px;}
+.main-area{flex:1;display:flex;flex-direction:column;align-items:center;padding:0 20px;}
+.sidebar-right{width:285px;flex-shrink:0;display:flex;flex-direction:column;gap:8px;}
+#title{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;background:linear-gradient(135deg,var(--gold),#fff 50%,var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;letter-spacing:3px;line-height:1;margin-bottom:2px;filter:drop-shadow(0 0 15px rgba(255,215,0,0.4));}
+#subtitle{font-size:0.7rem;color:#444;text-align:center;letter-spacing:4px;text-transform:uppercase;margin-bottom:8px;}
+.stat-panel{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:10px 12px;text-align:center;}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--gold);line-height:1;}
+.stat-label{font-size:0.6rem;color:#444;letter-spacing:2px;text-transform:uppercase;}
+#lebron-wrap{position:relative;cursor:pointer;margin:8px 0;}
+#lebron{width:200px;height:200px;object-fit:cover;border-radius:50%;border:3px solid var(--gold);box-shadow:0 0 30px rgba(255,215,0,0.3),0 0 60px rgba(255,215,0,0.1);transition:transform 0.05s,box-shadow 0.1s;display:block;}
+#lebron:active{transform:scale(0.93);}
+#lebron-wrap:hover #lebron{box-shadow:0 0 50px rgba(255,215,0,0.6),0 0 100px rgba(255,215,0,0.2);}
+.click-ripple{position:absolute;border-radius:50%;border:2px solid var(--gold);animation:rippleOut 0.5s ease-out forwards;pointer-events:none;top:50%;left:50%;transform:translate(-50%,-50%);}
+@keyframes rippleOut{0%{width:0;height:0;opacity:1;}100%{width:250px;height:250px;opacity:0;}}
+#rebirthBtn{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;padding:10px;border-radius:8px;border:2px solid var(--gold);background:transparent;color:var(--gold);cursor:pointer;transition:0.2s;width:100%;opacity:0.35;pointer-events:none;}
+#rebirthBtn.ready{opacity:1;pointer-events:all;animation:pulseBorder 1.5s infinite;}
+#rebirthBtn.ready:hover{background:var(--gold);color:#000;}
+@keyframes pulseBorder{0%,100%{box-shadow:0 0 0 0 rgba(255,215,0,0.6);}50%{box-shadow:0 0 0 10px rgba(255,215,0,0);}}
+.prestige-info{font-size:0.8rem;color:#666;text-align:center;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:10px;line-height:1.7;}
+.prestige-info span{color:var(--gold);}
+.btn-gold{background:var(--gold);color:#000;border:none;padding:8px;border-radius:6px;font-weight:700;cursor:pointer;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:1px;width:100%;transition:0.15s;}
+.btn-gold:hover{background:var(--gold2);}
+.btn-dark{background:#111;color:#888;border:1px solid #2a2a2a;padding:6px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:0.78rem;width:100%;transition:0.15s;}
+.btn-dark:hover{background:#1a1a1a;color:#ccc;}
+.btn-owner-open{background:transparent;border:1px solid #2a2a2a;color:#555;padding:9px;border-radius:6px;cursor:pointer;font-family:'Bebas Neue',sans-serif;font-size:0.95rem;letter-spacing:2px;width:100%;transition:0.2s;}
+.btn-owner-open:hover{border-color:#555;color:#888;}
+.tools-box{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:6px;}
+.tools-box label{font-size:0.6rem;color:#444;letter-spacing:2px;text-transform:uppercase;}
+.tools-box input{background:#000;border:1px solid #2a2a2a;color:var(--gold);padding:7px 10px;border-radius:5px;width:100%;outline:none;font-family:inherit;font-size:0.85rem;}
+.tools-box input:focus{border-color:var(--gold);}
+.store-header{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:3px;color:#444;padding:4px 0;border-bottom:1px solid #181818;margin-bottom:4px;}
+.store-scroll{overflow-y:auto;display:flex;flex-direction:column;gap:5px;max-height:calc(100vh - 100px);padding-right:4px;}
+.upg-btn{background:var(--panel);border:1px solid var(--border);border-radius:7px;padding:9px 12px;cursor:pointer;text-align:left;transition:0.12s;display:flex;justify-content:space-between;align-items:center;width:100%;}
+.upg-btn:hover:not(:disabled){background:#161616;border-color:#3a3a3a;}
+.upg-btn:disabled{opacity:0.32;cursor:not-allowed;}
+.upg-btn.affordable{border-color:var(--gold);box-shadow:0 0 6px rgba(255,215,0,0.18);}
+.upg-name{font-size:0.82rem;font-weight:700;color:#ddd;display:block;}
+.upg-effect{font-size:0.68rem;color:var(--gold);}
+.upg-owned{font-size:0.6rem;color:#444;}
+.upg-right{text-align:right;flex-shrink:0;margin-left:8px;}
+.upg-cost{font-size:0.72rem;color:#777;font-weight:600;}
+.floating{position:fixed;color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:1.5rem;pointer-events:none;animation:floatUp 0.9s ease-out forwards;z-index:9999;text-shadow:0 2px 8px rgba(0,0,0,0.8);}
+@keyframes floatUp{0%{opacity:1;transform:translateY(0);}100%{opacity:0;transform:translateY(-90px);}}
+
+/* Toast notification */
+#toast-container{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:99999;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;}
+.toast{background:#111;border:1px solid var(--gold);color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;padding:10px 22px;border-radius:8px;box-shadow:0 4px 24px rgba(0,0,0,0.7);opacity:0;transform:translateY(16px);transition:opacity 0.22s,transform 0.22s;white-space:nowrap;pointer-events:none;max-width:90vw;text-align:center;}
+.toast.show{opacity:1;transform:translateY(0);}
+.toast.error{border-color:var(--red);color:var(--red);}
+
+/* Rebirth banner */
+#rebirth-banner{display:none;position:fixed;top:0;left:0;width:100%;z-index:19999;background:linear-gradient(90deg,#000 0%,#1a1400 40%,#1a1400 60%,#000 100%);border-bottom:1px solid var(--gold);padding:14px 24px;text-align:center;}
+#rebirth-banner.active{display:block;}
+.rb-title{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--gold);letter-spacing:3px;margin-bottom:4px;}
+.rb-body{font-size:0.85rem;color:#aaa;line-height:1.7;}
+.rb-body span{color:var(--gold);}
+.rb-close{position:absolute;top:10px;right:16px;background:none;border:none;color:#555;font-size:1.2rem;cursor:pointer;pointer-events:all;}
+.rb-close:hover{color:#aaa;}
+
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.93);z-index:10000;justify-content:center;align-items:center;}
+.overlay.active{display:flex;}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--gold);text-align:center;letter-spacing:3px;margin-bottom:18px;}
+.modal-close{position:absolute;top:10px;right:14px;background:none;border:none;color:#444;font-size:1.4rem;cursor:pointer;}
+.modal-close:hover{color:#888;}
+.owner-field{margin-bottom:10px;}
+.owner-field label{display:block;font-size:0.6rem;color:#444;letter-spacing:2px;margin-bottom:4px;text-transform:uppercase;}
+.owner-field input{background:#000;border:1px solid #2a2a2a;color:var(--gold);padding:10px;border-radius:6px;width:100%;font-family:inherit;font-size:1rem;outline:none;}
+.owner-field input:focus{border-color:var(--gold);}
+#ownerControls{display:none;flex-direction:column;gap:7px;margin-top:6px;}
+#ownerControls.active{display:flex;}
+.btn-oc{padding:10px;border-radius:6px;border:1px solid var(--gold);background:transparent;color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;cursor:pointer;transition:0.15s;width:100%;}
+.btn-oc:hover{background:var(--gold);color:#000;}
+.btn-oc.red{border-color:var(--red);color:var(--red);}
+.btn-oc.red:hover{background:var(--red);color:#fff;}
+.oc-section-title{font-family:'Bebas Neue',sans-serif;font-size:0.85rem;color:#666;letter-spacing:3px;text-align:center;padding:6px 0 2px;border-top:1px solid #1a1a1a;margin-top:6px;}
+.oc-section-title:first-child{border-top:none;margin-top:0;}
+.oc-label{font-size:0.62rem;color:#555;letter-spacing:2px;text-transform:uppercase;margin-top:8px;margin-bottom:3px;}
+.oc-quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:4px;}
+.oc-quick-grid .btn-oc.sm{font-size:0.72rem;padding:7px 6px;letter-spacing:0.5px;}
+#ownerErr{color:var(--red);font-size:0.75rem;text-align:center;margin-top:6px;min-height:18px;}
+.modal-box{background:#080808;border:2px solid var(--gold);border-radius:14px;padding:28px;width:400px;max-width:95vw;position:relative;max-height:92vh;overflow-y:auto;}
+.owner-input-row{display:flex;gap:6px;align-items:center;}
+.oc-input{background:#000;border:1px solid #333;color:var(--gold);padding:8px 10px;border-radius:6px;flex:1;font-family:inherit;font-size:0.9rem;outline:none;min-width:0;}
+.oc-input:focus{border-color:var(--gold);}
+.oc-input::placeholder{color:#444;font-size:0.8rem;}
+.btn-oc.sm{padding:8px 12px;font-size:0.8rem;letter-spacing:1px;flex-shrink:0;white-space:nowrap;}
+#endgameOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.97);z-index:20000;justify-content:center;align-items:center;flex-direction:column;text-align:center;padding:30px;overflow:hidden;}
+#endgameOverlay.active{display:flex;}
+.eg-title{font-family:'Bebas Neue',sans-serif;font-size:4.5rem;background:linear-gradient(135deg,var(--gold),#fff 40%,var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:6px;animation:egPulse 2s infinite;line-height:1;}
+@keyframes egPulse{0%,100%{filter:drop-shadow(0 0 20px rgba(255,215,0,0.6));}50%{filter:drop-shadow(0 0 60px rgba(255,215,0,1));}}
+.eg-sub{font-size:1rem;color:#888;margin:12px 0;letter-spacing:2px;max-width:480px;}
+.eg-stats{background:rgba(255,215,0,0.04);border:1px solid rgba(255,215,0,0.15);border-radius:12px;padding:18px 28px;margin:14px 0;display:flex;flex-direction:column;gap:8px;}
+.eg-stat{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--gold);}
+.eg-stat span{color:#fff;}
+.confetti-p{position:absolute;border-radius:2px;animation:confettiFall linear infinite;}
+@keyframes confettiFall{0%{transform:translateY(-20px) rotate(0deg);opacity:1;}100%{transform:translateY(110vh) rotate(720deg);opacity:0;}}
+.btn-eg{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:2px;padding:14px 40px;border-radius:10px;border:2px solid var(--gold);background:transparent;color:var(--gold);cursor:pointer;margin-top:10px;transition:0.2s;}
+.btn-eg:hover{background:var(--gold);color:#000;}
+#rebirthBonusRow{font-size:0.72rem;color:#555;text-align:center;padding:3px 0;}
+@media(max-width:800px){.wrapper{flex-direction:column;padding:8px;}.sidebar-left,.sidebar-right{width:100%;}.store-scroll{max-height:40vh;}}
+</style>
+</head>
+<body>
+<div class="scanline"></div>
+<div class="bg-anim" id="bgAnim"></div>
+<div id="toast-container"></div>
+
+<!-- Rebirth result banner -->
+<div id="rebirth-banner">
+  <button class="rb-close" onclick="document.getElementById('rebirth-banner').classList.remove('active')">✕</button>
+  <div class="rb-title" id="rb-title">✨ PRESTIGE COMPLETE</div>
+  <div class="rb-body" id="rb-body"></div>
+</div>
+
+<div class="overlay" id="ownerOverlay">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeOwner()">✕</button>
+    <div class="modal-title">⚠ OWNER ACCESS</div>
+    <div id="ownerLoginForm">
+      <div class="owner-field"><label>Username</label><input type="text" id="ownerUser" placeholder="owner"></div>
+      <div class="owner-field"><label>Password</label><input type="password" id="ownerPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')ownerLogin()"></div>
+      <button class="btn-gold" onclick="ownerLogin()">LOGIN</button>
+      <div id="ownerErr"></div>
+    </div>
+    <div id="ownerControls">
+      <div class="oc-section-title">⚡ SET ANY STAT</div>
+      <div class="oc-label">Aura (current)</div>
+      <div class="owner-input-row">
+        <input type="number" id="ocAuraAmt" placeholder="e.g. 1000000" class="oc-input">
+        <button class="btn-oc sm" onclick="ownerGiveAura()">+ ADD</button>
+        <button class="btn-oc sm" onclick="ownerSetAura()">= SET</button>
+      </div>
+      <div class="oc-label">Click Power (aura per click)</div>
+      <div class="owner-input-row">
+        <input type="number" id="ocClickAmt" placeholder="e.g. 500000" class="oc-input">
+        <button class="btn-oc sm" onclick="ownerAddClick()">+ ADD</button>
+        <button class="btn-oc sm" onclick="ownerSetClick()">= SET</button>
+      </div>
+      <div class="oc-label">Auto Aura (per second)</div>
+      <div class="owner-input-row">
+        <input type="number" id="ocApsAmt" placeholder="e.g. 999999" class="oc-input">
+        <button class="btn-oc sm" onclick="ownerAddAps()">+ ADD</button>
+        <button class="btn-oc sm" onclick="ownerSetAps()">= SET</button>
+      </div>
+      <div class="oc-label">Rings</div>
+      <div class="owner-input-row">
+        <input type="number" id="ocRingsAmt" placeholder="e.g. 100" class="oc-input">
+        <button class="btn-oc sm" onclick="ownerAddRings()">+ ADD</button>
+        <button class="btn-oc sm" onclick="ownerSetRings()">= SET</button>
+      </div>
+      <div class="oc-label">Rebirth Bonus Click</div>
+      <div class="owner-input-row">
+        <input type="number" id="ocBonusAmt" placeholder="e.g. 1000000" class="oc-input">
+        <button class="btn-oc sm" onclick="ownerAddBonus()">+ ADD</button>
+        <button class="btn-oc sm" onclick="ownerSetBonus()">= SET</button>
+      </div>
+      <div class="oc-label">Prestige Rank</div>
+      <div class="owner-input-row">
+        <input type="number" id="ocPrestigeAmt" placeholder="e.g. 10" class="oc-input">
+        <button class="btn-oc sm" onclick="ownerAddPrestige()">+ ADD</button>
+        <button class="btn-oc sm" onclick="ownerSetPrestige()">= SET</button>
+      </div>
+      <div class="oc-label">Rebirth Cost</div>
+      <div class="owner-input-row">
+        <input type="number" id="ocRebirthCostAmt" placeholder="e.g. 1000000" class="oc-input">
+        <button class="btn-oc sm" onclick="ownerSetRebirthCost()">= SET COST</button>
+      </div>
+      <div class="oc-section-title" style="margin-top:10px;">🎮 QUICK ACTIONS</div>
+      <div class="oc-quick-grid">
+        <button class="btn-oc sm" onclick="ownerQ(1e6)">+1M Aura</button>
+        <button class="btn-oc sm" onclick="ownerQ(1e9)">+1B Aura</button>
+        <button class="btn-oc sm" onclick="ownerQ(1e12)">+1T Aura</button>
+        <button class="btn-oc sm" onclick="ownerQ(1e15)">+1Q Aura</button>
+        <button class="btn-oc sm" onclick="ownerQClick(1000)">+1K Click</button>
+        <button class="btn-oc sm" onclick="ownerQClick(1000000)">+1M Click</button>
+        <button class="btn-oc sm" onclick="ownerQAps(1000)">+1K Auto</button>
+        <button class="btn-oc sm" onclick="ownerQAps(1000000)">+1M Auto</button>
+        <button class="btn-oc sm" onclick="ownerQRings(10)">+10 Rings</button>
+        <button class="btn-oc sm" onclick="ownerQRings(100)">+100 Rings</button>
+      </div>
+      <div class="oc-section-title" style="margin-top:10px;">🔧 GAME TOOLS</div>
+      <button class="btn-oc" onclick="ownerInstantRebirth()">INSTANT REBIRTH ×20</button>
+      <button class="btn-oc" onclick="ownerUnlockAll()">UNLOCK ALL UPGRADES</button>
+      <button class="btn-oc" onclick="ownerMaxEverything()">MAX EVERYTHING</button>
+      <button class="btn-oc" onclick="ownerSkipToEnd()">TRIGGER ENDGAME</button>
+      <button class="btn-oc" onclick="ownerResetRebirthCost()">RESET REBIRTH COST</button>
+      <button class="btn-oc red" onclick="ownerReset()">⚠ HARD RESET</button>
+      <button class="btn-dark" onclick="closeOwner()" style="margin-top:4px;">CLOSE PANEL</button>
+    </div>
+  </div>
+</div>
+
+<div id="endgameOverlay">
+  <div class="eg-title">🏆 TRANSCENDED 🏆</div>
+  <div class="eg-sub">You have achieved ABSOLUTE GOAT STATUS.<br>LeBron's aura has consumed the entire universe.</div>
+  <div class="eg-stats">
+    <div class="eg-stat">Total Aura Generated: <span id="egAllTime">—</span></div>
+    <div class="eg-stat">Prestige Rank: <span id="egPrestige">—</span></div>
+    <div class="eg-stat">Rings Earned: <span id="egRings">—</span></div>
+    <div class="eg-stat">Permanent Bonus Click: <span id="egBonus">—</span></div>
+  </div>
+  <div style="font-size:0.8rem;color:#444;letter-spacing:2px;">YOU HAVE REACHED THE END OF THE GAME</div>
+  <button class="btn-eg" onclick="closeEndgame()">KEEP PLAYING (Infinite Mode)</button>
+</div>
+
+<div class="wrapper">
+  <div class="sidebar-left">
+    <div id="title">LeBron<br>Aura</div>
+    <div id="subtitle">Clicker · GOAT Edition</div>
+    <div class="stat-panel"><div class="stat-val" id="auraDisplay">0</div><div class="stat-label">Aura</div></div>
+    <div class="stat-panel"><div class="stat-val" id="apsDisplay">0</div><div class="stat-label">Auto Aura / Sec</div></div>
+    <div class="stat-panel"><div class="stat-val" id="clickDisplay">1</div><div class="stat-label">Aura / Click</div></div>
+    <div class="prestige-info">
+      Rings: <span id="ringsVal">0</span> &nbsp;|&nbsp; Prestige: <span id="prestigeVal">0</span><br>
+      Aura Boost: <span id="boostVal">+0%</span><br>
+      Rebirth Bonus: <span id="bonusClickVal">+0</span>/click
+    </div>
+    <button id="rebirthBtn" onclick="doRebirth()">REBIRTH</button>
+    <div id="rebirthBonusRow">Rebirth now → +<span id="previewBonus">0</span> permanent click bonus</div>
+    <div class="tools-box">
+      <label>Save / Locker Codes</label>
+      <input type="text" id="lockerInput" placeholder="Code or save string...">
+      <button class="btn-gold" onclick="handleInput()">REDEEM / LOAD</button>
+      <button class="btn-dark" onclick="exportSave()">COPY SAVE CODE</button>
+    </div>
+    <button class="btn-owner-open" onclick="openOwner()">⚙ OWNER PANEL</button>
+  </div>
+
+  <div class="main-area">
+    <div style="height:14px;"></div>
+    <div id="lebron-wrap" onclick="clickLebron(event)">
+      <img id="lebron" src="https://th.bing.com/th/id/OIP.s4ihfuhwtsPEFwJ0XAXD2gHaE8?w=231&h=180&c=7&r=0&o=7&dpr=2&pid=1.7&rm=3" alt="LeBron">
+    </div>
+    <div style="font-size:0.62rem;color:#222;letter-spacing:3px;margin-top:6px;text-transform:uppercase;">Click to gain Aura</div>
+    <div style="margin-top:24px;background:rgba(255,215,0,0.04);border:1px solid #1a1a1a;border-radius:10px;padding:14px 18px;max-width:220px;text-align:center;">
+      <div style="font-family:'Bebas Neue';font-size:0.85rem;color:#444;letter-spacing:2px;margin-bottom:6px;">ENDGAME GOAL</div>
+      <div style="font-size:0.78rem;color:#555;line-height:1.6;">Reach <span style="color:#666">1 Quintillion</span> all-time aura to see the true ending</div>
+      <div style="margin-top:8px;font-family:'Bebas Neue';font-size:1rem;color:#3a3a3a;" id="endgameProgress">0%</div>
+    </div>
+  </div>
+
+  <div class="sidebar-right">
+    <div class="store-header">🏀 Upgrades</div>
+    <div class="store-scroll" id="storeEl"></div>
+  </div>
+</div>
+
+<script>
+const SAVE_KEY = 'lebronAura_v4';
+const ENDGAME_AT = 1e18;
+const MAX_SAFE = 1e300;
+
+// ── Toast system ─────────────────────────────────────────────────────────────
+function toast(msg, isError) {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = 'toast' + (isError ? ' error' : '');
+  t.textContent = msg;
+  c.appendChild(t);
+  requestAnimationFrame(() => { requestAnimationFrame(() => { t.classList.add('show'); }); });
+  setTimeout(() => {
+    t.classList.remove('show');
+    setTimeout(() => t.remove(), 300);
+  }, 2800);
+}
+function toastErr(msg) { toast(msg, true); }
+
+// ── Rebirth banner ────────────────────────────────────────────────────────────
+function showRebirthBanner(rank, bonusGain, newRings, boost) {
+  document.getElementById('rb-title').textContent = '✨ PRESTIGE #' + rank + ' COMPLETE';
+  document.getElementById('rb-body').innerHTML =
+    '+<span>' + fmt(bonusGain) + '</span> permanent bonus click power!&nbsp;&nbsp;' +
+    '+<span>' + newRings + '</span> rings — Aura Boost: <span>+' + Math.round(boost * 100) + '%</span>';
+  const b = document.getElementById('rebirth-banner');
+  b.classList.add('active');
+  setTimeout(() => b.classList.remove('active'), 5000);
+}
+
+// ── Safe number helpers ──────────────────────────────────────────────────────
+function safeNum(v, fallback) {
+  if (fallback === undefined) fallback = 0;
+  if (v === null || v === undefined) return fallback;
+  const n = Number(v);
+  if (!isFinite(n) || isNaN(n)) return fallback;
+  return Math.min(n, MAX_SAFE);
+}
+function safeInt(v, fallback) {
+  if (fallback === undefined) fallback = 0;
+  const n = safeNum(v, fallback);
+  return Math.floor(n);
+}
+function sanitizeState(s) {
+  if (!s || typeof s !== 'object') return null;
+  s.aura             = safeNum(s.aura, 0);
+  s.clickPower       = safeNum(s.clickPower, 1);
+  s.aps              = safeNum(s.aps, 0);
+  s.rings            = safeInt(s.rings, 0);
+  s.ringBoost        = safeNum(s.ringBoost, 0);
+  s.prestigeRank     = safeInt(s.prestigeRank, 0);
+  s.rebirthCost      = safeNum(s.rebirthCost, 1000000);
+  if (s.rebirthCost < 1) s.rebirthCost = 1000000;
+  s.allTimeAura      = safeNum(s.allTimeAura, 0);
+  s.rebirthBonusClick= safeNum(s.rebirthBonusClick, 0);
+  s.endgameShown     = !!s.endgameShown;
+  if (Array.isArray(s.state)) {
+    s.state = s.state.map(item => ({
+      id:    safeInt(item.id, 0),
+      cost:  safeNum(item.cost, 0),
+      owned: safeInt(item.owned, 0)
+    }));
+  }
+  return s;
+}
+
+let aura=0, clickPower=1, aps=0;
+let rings=0, ringBoost=0, prestigeRank=0;
+let rebirthCost=1000000, allTimeAura=0;
+let rebirthBonusClick=0;
+let endgameShown=false;
+
+const UPGRADES=[
+  {id:1,  name:"Peewee Basketball",        type:"click", power:1,       baseCost:10,           unlockAt:0},
+  {id:2,  name:"Park Court Grind",          type:"aps",   power:1,       baseCost:15,           unlockAt:0},
+  {id:3,  name:"Middle School Hype",        type:"click", power:1,       baseCost:22,           unlockAt:5},
+  {id:4,  name:"Twitter Mention",           type:"aps",   power:1,       baseCost:28,           unlockAt:8},
+  {id:5,  name:"Local Sports Blog",         type:"click", power:2,       baseCost:45,           unlockAt:15},
+  {id:6,  name:"Youth Camp Star",           type:"aps",   power:2,       baseCost:60,           unlockAt:22},
+  {id:7,  name:"Pickup Game Win",           type:"click", power:2,       baseCost:80,           unlockAt:32},
+  {id:8,  name:"Driveway Drills",           type:"aps",   power:2,       baseCost:100,          unlockAt:45},
+  {id:9,  name:"High School Hype",          type:"click", power:3,       baseCost:130,          unlockAt:60},
+  {id:10, name:"First ESPN Mention",        type:"aps",   power:3,       baseCost:170,          unlockAt:80},
+  {id:11, name:"Prep Phenom",               type:"click", power:4,       baseCost:230,          unlockAt:120},
+  {id:12, name:"State Champion",            type:"aps",   power:4,       baseCost:310,          unlockAt:160},
+  {id:13, name:"Recruiting Visit",          type:"click", power:6,       baseCost:420,          unlockAt:220},
+  {id:14, name:"Sports Illustrated Cover",  type:"aps",   power:6,       baseCost:570,          unlockAt:300},
+  {id:15, name:"NBA Draft Buzz",            type:"click", power:8,       baseCost:780,          unlockAt:420},
+  {id:16, name:"Nike Handshake",            type:"aps",   power:8,       baseCost:1000,         unlockAt:580},
+  {id:17, name:"#1 Draft Pick",             type:"click", power:11,      baseCost:1400,         unlockAt:800},
+  {id:18, name:"Rookie Camp",               type:"aps",   power:11,      baseCost:1800,         unlockAt:1050},
+  {id:19, name:"First NBA Game",            type:"click", power:15,      baseCost:2400,         unlockAt:1350},
+  {id:20, name:"Rookie of the Year Race",   type:"aps",   power:15,      baseCost:3100,         unlockAt:1800},
+  {id:21, name:"First All-Star Nod",        type:"click", power:20,      baseCost:4000,         unlockAt:2500},
+  {id:22, name:"Nike Contract Signed",      type:"aps",   power:20,      baseCost:5200,         unlockAt:3300},
+  {id:23, name:"Olympic Dream Team",        type:"click", power:28,      baseCost:6800,         unlockAt:4400},
+  {id:24, name:"ESPN Top 10 Play",          type:"aps",   power:28,      baseCost:8800,         unlockAt:5800},
+  {id:25, name:"First Playoff Run",         type:"click", power:38,      baseCost:11500,        unlockAt:7500},
+  {id:26, name:"All-Star Game MVP",         type:"aps",   power:38,      baseCost:15000,        unlockAt:9800},
+  {id:27, name:"MVP Voting Contender",      type:"click", power:52,      baseCost:20000,        unlockAt:13000},
+  {id:28, name:"First Scoring Title",       type:"aps",   power:52,      baseCost:26000,        unlockAt:17000},
+  {id:29, name:"Twitter Army Grows",        type:"click", power:70,      baseCost:34000,        unlockAt:22000},
+  {id:30, name:"Space Jam Cameo",           type:"aps",   power:70,      baseCost:44000,        unlockAt:28000},
+  {id:31, name:"MVP Trophy",                type:"click", power:95,      baseCost:58000,        unlockAt:38000},
+  {id:32, name:"Clutch Gene Activated",     type:"aps",   power:95,      baseCost:75000,        unlockAt:50000},
+  {id:33, name:"Finals Appearance",         type:"click", power:130,     baseCost:98000,        unlockAt:65000},
+  {id:34, name:"Championship Ring #1",      type:"aps",   power:130,     baseCost:130000,       unlockAt:85000},
+  {id:35, name:"Finals MVP",                type:"click", power:175,     baseCost:170000,       unlockAt:110000},
+  {id:36, name:"Legacy Boost",              type:"aps",   power:175,     baseCost:220000,       unlockAt:145000},
+  {id:37, name:"Banana Boat Crew",          type:"click", power:235,     baseCost:290000,       unlockAt:190000},
+  {id:38, name:"The Decision Era",          type:"aps",   power:235,     baseCost:380000,       unlockAt:250000},
+  {id:39, name:"South Beach Heat",          type:"click", power:315,     baseCost:500000,       unlockAt:330000},
+  {id:40, name:"Back-to-Back Rings",        type:"aps",   power:315,     baseCost:650000,       unlockAt:430000},
+  {id:41, name:"Return to Cleveland",       type:"click", power:425,     baseCost:860000,       unlockAt:570000},
+  {id:42, name:"Ring for Cleveland",        type:"aps",   power:425,     baseCost:1120000,      unlockAt:740000},
+  {id:43, name:"Chase Jordan",              type:"click", power:570,     baseCost:1480000,      unlockAt:980000},
+  {id:44, name:"All-Time Scorer Race",      type:"aps",   power:570,     baseCost:1950000,      unlockAt:1300000},
+  {id:45, name:"LA Laker",                  type:"click", power:760,     baseCost:2600000,      unlockAt:1700000},
+  {id:46, name:"Youngest Scorer Ever",      type:"aps",   power:760,     baseCost:3400000,      unlockAt:2200000},
+  {id:47, name:"Son in the League",         type:"click", power:1020,    baseCost:4500000,      unlockAt:2900000},
+  {id:48, name:"Billionaire Athlete",       type:"aps",   power:1020,    baseCost:5900000,      unlockAt:3900000},
+  {id:49, name:"I Promise School",          type:"click", power:1350,    baseCost:7800000,      unlockAt:5200000},
+  {id:50, name:"Media Empire Grows",        type:"aps",   power:1350,    baseCost:10200000,     unlockAt:6800000},
+  {id:51, name:"Court Vision Level 100",    type:"click", power:1800,    baseCost:13500000,     unlockAt:9000000},
+  {id:52, name:"SuperTeam Architect",       type:"aps",   power:1800,    baseCost:17800000,     unlockAt:12000000},
+  {id:53, name:"All-Time Assists Leader",   type:"click", power:2400,    baseCost:23500000,     unlockAt:16000000},
+  {id:54, name:"Playoff Points Record",     type:"aps",   power:2400,    baseCost:31000000,     unlockAt:21000000},
+  {id:55, name:"Bronze Olympic Gold",       type:"click", power:3200,    baseCost:41000000,     unlockAt:28000000},
+  {id:56, name:"GOAT Debate Winner",        type:"aps",   power:3200,    baseCost:54000000,     unlockAt:37000000},
+  {id:57, name:"Ring Number 5",             type:"click", power:4200,    baseCost:71000000,     unlockAt:49000000},
+  {id:58, name:"Global Brand",              type:"aps",   power:4200,    baseCost:94000000,     unlockAt:65000000},
+  {id:59, name:"Statue Outside Arena",      type:"click", power:5600,    baseCost:124000000,    unlockAt:86000000},
+  {id:60, name:"Hall of Fame Lock",         type:"aps",   power:5600,    baseCost:163000000,    unlockAt:113000000},
+  {id:61, name:"Lifetime Nike Deal",        type:"click", power:7500,    baseCost:215000000,    unlockAt:150000000},
+  {id:62, name:"LeGM Mode Activated",       type:"aps",   power:7500,    baseCost:285000000,    unlockAt:200000000},
+  {id:63, name:"NBA Team Owner",            type:"click", power:10000,   baseCost:375000000,    unlockAt:265000000},
+  {id:64, name:"Own the Media Cycle",       type:"aps",   power:10000,   baseCost:500000000,    unlockAt:350000000},
+  {id:65, name:"Scoring Record Breaks MJ",  type:"click", power:13500,   baseCost:660000000,    unlockAt:460000000},
+  {id:66, name:"GOAT Certified",            type:"aps",   power:13500,   baseCost:870000000,    unlockAt:610000000},
+  {id:67, name:"Children in the League",    type:"click", power:18000,   baseCost:1150000000,   unlockAt:810000000},
+  {id:68, name:"Aura Goes Viral",           type:"aps",   power:18000,   baseCost:1520000000,   unlockAt:1070000000},
+  {id:69, name:"Space Jam Multiverse",      type:"click", power:24000,   baseCost:2000000000,   unlockAt:1400000000},
+  {id:70, name:"Father Time Defied",        type:"aps",   power:24000,   baseCost:2650000000,   unlockAt:1850000000},
+  {id:71, name:"Inter-Continental Tour",    type:"click", power:32000,   baseCost:3500000000,   unlockAt:2450000000},
+  {id:72, name:"Trillion Dollar Brand",     type:"aps",   power:32000,   baseCost:4600000000,   unlockAt:3200000000},
+  {id:73, name:"Chosen One Fulfilled",      type:"click", power:43000,   baseCost:6100000000,   unlockAt:4300000000},
+  {id:74, name:"Aura Singularity",          type:"aps",   power:43000,   baseCost:8000000000,   unlockAt:5600000000},
+  {id:75, name:"Generational Icon",         type:"click", power:57000,   baseCost:10600000000,  unlockAt:7400000000},
+  {id:76, name:"Perpetual Legacy",          type:"aps",   power:57000,   baseCost:14000000000,  unlockAt:9800000000},
+  {id:77, name:"Aura Resonance",            type:"click", power:76000,   baseCost:18500000000,  unlockAt:13000000000},
+  {id:78, name:"Omniverse Fame",            type:"aps",   power:76000,   baseCost:24500000000,  unlockAt:17000000000},
+  {id:79, name:"DNA of Basketball",         type:"click", power:100000,  baseCost:32000000000,  unlockAt:22500000000},
+  {id:80, name:"Aura Overload",             type:"aps",   power:100000,  baseCost:42000000000,  unlockAt:29500000000},
+  {id:81, name:"Quantum Crossover",         type:"click", power:135000,  baseCost:56000000000,  unlockAt:39000000000},
+  {id:82, name:"Interdimensional Dunk",     type:"aps",   power:135000,  baseCost:74000000000,  unlockAt:51000000000},
+  {id:83, name:"Reality Warp",              type:"click", power:180000,  baseCost:97000000000,  unlockAt:68000000000},
+  {id:84, name:"Time Stops for LeBron",     type:"aps",   power:180000,  baseCost:128000000000, unlockAt:89000000000},
+  {id:85, name:"Multiverse Rings",          type:"click", power:240000,  baseCost:169000000000, unlockAt:118000000000},
+  {id:86, name:"Universal MVP",             type:"aps",   power:240000,  baseCost:223000000000, unlockAt:156000000000},
+  {id:87, name:"Cosmic Court Vision",       type:"click", power:320000,  baseCost:295000000000, unlockAt:206000000000},
+  {id:88, name:"Galaxy Aura Field",         type:"aps",   power:320000,  baseCost:390000000000, unlockAt:273000000000},
+  {id:89, name:"Star Cluster Dribble",      type:"click", power:420000,  baseCost:514000000000, unlockAt:360000000000},
+  {id:90, name:"Black Hole Crossover",      type:"aps",   power:420000,  baseCost:680000000000, unlockAt:476000000000},
+  {id:91, name:"Big Bang Layup",            type:"click", power:560000,  baseCost:900000000000, unlockAt:630000000000},
+  {id:92, name:"Infinite Spin Move",        type:"aps",   power:560000,  baseCost:1190000000000,unlockAt:833000000000},
+  {id:93, name:"Omniscient Court Sense",    type:"click", power:740000,  baseCost:1570000000000,unlockAt:1100000000000},
+  {id:94, name:"Aura Transcendence",        type:"aps",   power:740000,  baseCost:2070000000000,unlockAt:1450000000000},
+  {id:95, name:"The Chosen Universe",       type:"click", power:860000,  baseCost:2740000000000,unlockAt:1920000000000},
+  {id:96, name:"Beyond the Simulation",     type:"aps",   power:860000,  baseCost:3610000000000,unlockAt:2530000000000},
+  {id:97, name:"Omega Dunk",                type:"click", power:940000,  baseCost:4770000000000,unlockAt:3340000000000},
+  {id:98, name:"Eternal Aura Field",        type:"aps",   power:940000,  baseCost:6300000000000,unlockAt:4410000000000},
+  {id:99, name:"LeBron Ascended",           type:"click", power:1000000, baseCost:9000000000000,unlockAt:6300000000000},
+  {id:100,name:"Absolute GOAT Mode",        type:"aps",   power:1000000, baseCost:12000000000000,unlockAt:8400000000000},
+  {id:101,name:"⭐ MAXIMUM AURA (CLICK)",   type:"click", power:10000000,baseCost:20000000000000,unlockAt:14000000000000},
+  {id:102,name:"⭐ MAXIMUM AURA (APS)",     type:"aps",   power:10000000,baseCost:30000000000000,unlockAt:21000000000000},
+{id:103,name:" way to op, you cant offord this LOSER",     type:"aps",   power:1000000000000,baseCost:30000000000000000,unlockAt:2100000000000000000},
+
+];
+
+let state=UPGRADES.map(u=>({id:u.id,cost:u.baseCost,owned:0}));
+const getState=id=>state.find(s=>s.id===id);
+
+function fmt(n){
+  n = safeNum(n, 0);
+  if(n>=1e18)return(n/1e18).toFixed(2)+"Qi";
+  if(n>=1e15)return(n/1e15).toFixed(2)+"Q";
+  if(n>=1e12)return(n/1e12).toFixed(2)+"T";
+  if(n>=1e9)return(n/1e9).toFixed(2)+"B";
+  if(n>=1e6)return(n/1e6).toFixed(2)+"M";
+  if(n>=1e3)return(n/1e3).toFixed(2)+"K";
+  return Math.floor(n).toLocaleString();
+}
+
+function effClick(){
+  const v = Math.floor((clickPower+rebirthBonusClick)*(1+ringBoost));
+  return safeNum(v, 1);
+}
+function effAps(){
+  const v = aps*(1+ringBoost);
+  return safeNum(v, 0);
+}
+
+function clampVars(){
+  aura              = safeNum(aura, 0);
+  clickPower        = safeNum(clickPower, 1);
+  aps               = safeNum(aps, 0);
+  rings             = safeInt(rings, 0);
+  ringBoost         = safeNum(ringBoost, 0);
+  prestigeRank      = safeInt(prestigeRank, 0);
+  rebirthCost       = safeNum(rebirthCost, 1000000);
+  if (!isFinite(rebirthCost) || rebirthCost < 1) rebirthCost = 1000000;
+  allTimeAura       = safeNum(allTimeAura, 0);
+  rebirthBonusClick = safeNum(rebirthBonusClick, 0);
+}
+
+function updateUI(){
+  clampVars();
+  document.getElementById('auraDisplay').textContent=fmt(aura);
+  document.getElementById('apsDisplay').textContent=fmt(effAps());
+  document.getElementById('clickDisplay').textContent=fmt(effClick());
+  document.getElementById('ringsVal').textContent=rings;
+  document.getElementById('prestigeVal').textContent=prestigeRank;
+  document.getElementById('boostVal').textContent='+'+Math.round(ringBoost*100)+'%';
+  document.getElementById('bonusClickVal').textContent=fmt(rebirthBonusClick);
+
+  const preview=safeInt(aura/1000000, 0);
+  document.getElementById('previewBonus').textContent=fmt(preview);
+
+  const rb=document.getElementById('rebirthBtn');
+  rb.classList.toggle('ready',aura>=rebirthCost);
+  rb.textContent='REBIRTH ('+fmt(rebirthCost)+')';
+
+  const pct=Math.min(100,(allTimeAura/ENDGAME_AT)*100);
+  const pctSafe = safeNum(pct, 0);
+  document.getElementById('endgameProgress').textContent=pctSafe<0.01?'<0.01%':pctSafe.toFixed(pctSafe<1?4:2)+'%';
+
+  if(!endgameShown&&allTimeAura>=ENDGAME_AT)triggerEndgame();
+  renderStore();
+}
+
+function renderStore(){
+  const el=document.getElementById('storeEl');
+  const visible=UPGRADES.filter(u=>allTimeAura>=u.unlockAt);
+  const firstBtn=el.querySelector('.upg-btn');
+  const needsRebuild=el.children.length!==visible.length||(firstBtn&&firstBtn.id!=='upg-'+visible[0]?.id);
+  if(needsRebuild){
+    el.innerHTML='';
+    visible.forEach(upg=>{
+      const s=getState(upg.id);
+      const btn=document.createElement('button');
+      btn.className='upg-btn';
+      btn.id='upg-'+upg.id;
+      const effect=upg.type==='click'?'+'+fmt(upg.power)+' per click':'+'+fmt(upg.power)+' auto aura/sec';
+      btn.innerHTML=`<div class="upg-left"><span class="upg-name">${upg.name}</span><span class="upg-effect">${effect}</span><span class="upg-owned" id="upg-owned-${upg.id}">Owned: ${s.owned}</span></div><div class="upg-right"><span class="upg-cost" id="upg-cost-${upg.id}">${fmt(s.cost)}</span></div>`;
+      btn.onclick=()=>buyUpgrade(upg.id);
+      el.appendChild(btn);
+    });
+  }
+  visible.forEach(upg=>{
+    const s=getState(upg.id);
+    const btn=document.getElementById('upg-'+upg.id);
+    if(!btn)return;
+    const affordable=aura>=s.cost;
+    btn.disabled=!affordable;
+    btn.classList.toggle('affordable',affordable);
+    const ownEl=document.getElementById('upg-owned-'+upg.id);
+    const costEl=document.getElementById('upg-cost-'+upg.id);
+    if(ownEl)ownEl.textContent='Owned: '+s.owned;
+    if(costEl)costEl.textContent=fmt(s.cost);
+  });
+}
+
+function clickLebron(e){
+  const gain=effClick();
+  aura+=gain; allTimeAura+=gain;
+  clampVars();
+  spawnFloat(e.clientX,e.clientY,'+'+fmt(gain));
+  const wrap=document.getElementById('lebron-wrap');
+  const r=document.createElement('div');r.className='click-ripple';
+  wrap.appendChild(r);setTimeout(()=>r.remove(),500);
+  updateUI();
+}
+
+function spawnFloat(x,y,txt){
+  const d=document.createElement('div');d.className='floating';d.textContent=txt;
+  d.style.left=x+'px';d.style.top=y+'px';
+  document.body.appendChild(d);setTimeout(()=>d.remove(),900);
+}
+
+function buyUpgrade(id){
+  const upg=UPGRADES.find(u=>u.id===id);
+  const s=getState(id);
+  if(aura<s.cost)return;
+  aura-=s.cost; s.owned++;
+  if(upg.type==='click') clickPower+=upg.power;
+  else aps+=upg.power;
+  const newCost = Math.floor(s.cost*1.18);
+  s.cost = safeNum(newCost, s.cost);
+  if (!isFinite(s.cost) || s.cost <= 0) s.cost = s.cost || upg.baseCost;
+  clampVars();
+  updateUI(); saveGame();
+}
+
+function doRebirth(){
+  if(aura<rebirthCost)return;
+  const bonusGain=safeInt(aura/1000000, 0);
+  rebirthBonusClick+=bonusGain;
+  const newRings=safeInt(aura/rebirthCost, 0);
+  rings+=newRings;
+  ringBoost=rings*0.10;
+  prestigeRank++;
+  aura=0; clickPower=1; aps=0;
+  state=UPGRADES.map(u=>({id:u.id,cost:u.baseCost,owned:0}));
+  const nextCost = Math.floor(rebirthCost*2.8);
+  rebirthCost = isFinite(nextCost) && nextCost > 0 ? nextCost : rebirthCost;
+  clampVars();
+  document.getElementById('storeEl').innerHTML='';
+  updateUI(); saveGame();
+  showRebirthBanner(prestigeRank, bonusGain, newRings, ringBoost);
+}
+
+function triggerEndgame(){
+  endgameShown=true;
+  document.getElementById('egAllTime').textContent=fmt(allTimeAura);
+  document.getElementById('egPrestige').textContent=prestigeRank;
+  document.getElementById('egRings').textContent=rings;
+  document.getElementById('egBonus').textContent=fmt(rebirthBonusClick);
+  const eo=document.getElementById('endgameOverlay');
+  const colors=['#FFD700','#FFF','#FF6B6B','#4ecdc4','#a29bfe','#fd79a8'];
+  for(let i=0;i<80;i++){
+    const c=document.createElement('div');c.className='confetti-p';
+    c.style.cssText=`left:${Math.random()*100}%;top:${-5+Math.random()*5}%;background:${colors[Math.floor(Math.random()*colors.length)]};animation-duration:${3+Math.random()*4}s;animation-delay:${Math.random()*3}s;width:${6+Math.random()*10}px;height:${6+Math.random()*10}px;`;
+    eo.appendChild(c);
+  }
+  eo.classList.add('active');
+  saveGame();
+}
+function closeEndgame(){document.getElementById('endgameOverlay').classList.remove('active');}
+
+function saveGame(){
+  clampVars();
+  const data={aura,clickPower,aps,rings,ringBoost,prestigeRank,rebirthCost,allTimeAura,rebirthBonusClick,endgameShown,state};
+  try { localStorage.setItem(SAVE_KEY,JSON.stringify(data)); } catch(e) {}
+}
+
+function loadState(saved){
+  if(!saved)return;
+  const s = sanitizeState(saved);
+  if (!s) return;
+  aura=s.aura; clickPower=s.clickPower; aps=s.aps;
+  rings=s.rings; ringBoost=s.ringBoost;
+  prestigeRank=s.prestigeRank; rebirthCost=s.rebirthCost;
+  allTimeAura=s.allTimeAura; rebirthBonusClick=s.rebirthBonusClick;
+  endgameShown=s.endgameShown;
+  if(s.state) state=s.state;
+  clampVars();
+  updateUI();
+}
+
+function exportSave(){
+  clampVars();
+  const data={aura,clickPower,aps,rings,ringBoost,prestigeRank,rebirthCost,allTimeAura,rebirthBonusClick,endgameShown,state};
+  const str=btoa(JSON.stringify(data));
+  const inp=document.getElementById('lockerInput');
+  inp.value=str;
+  try { inp.select(); document.execCommand('copy'); toast('Save code copied to clipboard!'); }
+  catch(e) { toast('Save code generated — copy from the field above.'); }
+}
+
+function importSave(str){
+  try{
+    const parsed = JSON.parse(atob(str));
+    loadState(parsed);
+    toast('Save loaded successfully!');
+  } catch(e){ toastErr('Error loading save — invalid code.'); }
+}
+
+function handleInput(){
+  const inp=document.getElementById('lockerInput');
+  const val=inp.value.trim();
+  if(val==="ChickenGamesIsAhh"){
+    aura+=1000000;allTimeAura+=1000000;clampVars();
+    toast('1,000,000 aura granted!');
+  } else if(val==="6_Lakers_New_Code_Lakers"){
+    aura+=1e15;allTimeAura+=1e15;clampVars();
+    toast('QUADRILLION AURA GRANTED!');
+  } else if(val.length>50){
+    importSave(val);
+  } else {
+    toastErr('Invalid code.');
+  }
+  inp.value=''; updateUI();
+}
+
+setInterval(()=>{
+  if(aps>0){
+    const g=safeNum(effAps()/10, 0);
+    aura+=g; allTimeAura+=g;
+    clampVars();
+    updateUI();
+  }
+},100);
+setInterval(saveGame,15000);
+
+// OWNER
+function openOwner(){document.getElementById('ownerOverlay').classList.add('active');}
+function closeOwner(){document.getElementById('ownerOverlay').classList.remove('active');}
+function ownerLogin(){
+  const u=document.getElementById('ownerUser').value.trim();
+  const p=document.getElementById('ownerPass').value.trim();
+  if(u==='owner'&&p==='lrd123'){
+    document.getElementById('ownerLoginForm').style.display='none';
+    document.getElementById('ownerControls').classList.add('active');
+  }else{document.getElementById('ownerErr').textContent='Access denied.';}
+}
+
+function ocVal(id){const v=parseFloat(document.getElementById(id).value);return (isNaN(v)||!isFinite(v))?null:v;}
+function ocInt(id){const v=parseInt(document.getElementById(id).value);return (isNaN(v)||!isFinite(v))?null:v;}
+function oc_refreshRingBoost(){ringBoost=safeNum(rings*0.10, 0);}
+
+function ownerGiveAura(){const v=ocVal('ocAuraAmt');if(!v||v<=0){toastErr('Enter a valid amount.');return;}aura=safeNum(aura+v,0);allTimeAura=safeNum(allTimeAura+v,0);clampVars();updateUI();saveGame();toast('+'+fmt(v)+' Aura added!');}
+function ownerSetAura(){const v=ocVal('ocAuraAmt');if(v===null||v<0){toastErr('Enter a valid amount.');return;}aura=safeNum(v,0);allTimeAura=safeNum(Math.max(allTimeAura,v),0);clampVars();updateUI();saveGame();toast('Aura set to '+fmt(v)+'!');}
+function ownerAddClick(){const v=ocVal('ocClickAmt');if(!v||v<=0){toastErr('Enter a valid amount.');return;}clickPower=safeNum(clickPower+v,1);clampVars();updateUI();saveGame();toast('+'+fmt(v)+' click power!');}
+function ownerSetClick(){const v=ocVal('ocClickAmt');if(v===null||v<0){toastErr('Enter a valid amount.');return;}clickPower=safeNum(v,1);clampVars();updateUI();saveGame();toast('Click power set to '+fmt(v)+'!');}
+function ownerAddAps(){const v=ocVal('ocApsAmt');if(!v||v<0){toastErr('Enter a valid amount.');return;}aps=safeNum(aps+v,0);clampVars();updateUI();saveGame();toast('+'+fmt(v)+' auto aura/sec!');}
+function ownerSetAps(){const v=ocVal('ocApsAmt');if(v===null||v<0){toastErr('Enter a valid amount.');return;}aps=safeNum(v,0);clampVars();updateUI();saveGame();toast('Auto Aura/sec set to '+fmt(v)+'!');}
+function ownerAddRings(){const v=ocInt('ocRingsAmt');if(!v||v<=0){toastErr('Enter a valid amount.');return;}rings=safeInt(rings+v,0);oc_refreshRingBoost();clampVars();updateUI();saveGame();toast('+'+v+' rings! Boost: +'+Math.round(ringBoost*100)+'%');}
+function ownerSetRings(){const v=ocInt('ocRingsAmt');if(v===null||v<0){toastErr('Enter a valid amount.');return;}rings=safeInt(v,0);oc_refreshRingBoost();clampVars();updateUI();saveGame();toast('Rings set to '+v+'!');}
+function ownerAddBonus(){const v=ocVal('ocBonusAmt');if(!v||v<=0){toastErr('Enter a valid amount.');return;}rebirthBonusClick=safeNum(rebirthBonusClick+v,0);clampVars();updateUI();saveGame();toast('+'+fmt(v)+' bonus click!');}
+function ownerSetBonus(){const v=ocVal('ocBonusAmt');if(v===null||v<0){toastErr('Enter a valid amount.');return;}rebirthBonusClick=safeNum(v,0);clampVars();updateUI();saveGame();toast('Rebirth bonus set to '+fmt(v)+'!');}
+function ownerAddPrestige(){const v=ocInt('ocPrestigeAmt');if(!v||v<=0){toastErr('Enter a valid amount.');return;}prestigeRank=safeInt(prestigeRank+v,0);clampVars();updateUI();saveGame();toast('+'+v+' prestige ranks!');}
+function ownerSetPrestige(){const v=ocInt('ocPrestigeAmt');if(v===null||v<0){toastErr('Enter a valid amount.');return;}prestigeRank=safeInt(v,0);clampVars();updateUI();saveGame();toast('Prestige set to '+v+'!');}
+function ownerSetRebirthCost(){const v=ocVal('ocRebirthCostAmt');if(!v||v<=0){toastErr('Enter a valid amount.');return;}rebirthCost=safeNum(v,1000000);clampVars();updateUI();saveGame();toast('Rebirth cost set to '+fmt(v)+'!');}
+
+function ownerQ(n){aura=safeNum(aura+n,0);allTimeAura=safeNum(allTimeAura+n,0);clampVars();updateUI();saveGame();toast('+'+fmt(n)+' Aura!');}
+function ownerQClick(n){clickPower=safeNum(clickPower+n,1);clampVars();updateUI();saveGame();toast('+'+fmt(n)+' click power!');}
+function ownerQAps(n){aps=safeNum(aps+n,0);clampVars();updateUI();saveGame();toast('+'+fmt(n)+' auto/sec!');}
+function ownerQRings(n){rings=safeInt(rings+n,0);oc_refreshRingBoost();clampVars();updateUI();saveGame();toast('+'+n+' rings!');}
+
+function ownerInstantRebirth(){
+  for(let i=0;i<20;i++){
+    const atRebirth=Math.max(safeNum(aura,0),safeNum(rebirthCost,1000000));
+    rebirthBonusClick=safeNum(rebirthBonusClick+Math.max(1,safeInt(atRebirth/1000000,0)),0);
+    rings=safeInt(rings+Math.max(1,safeInt(atRebirth/rebirthCost,0)),0);
+    oc_refreshRingBoost(); prestigeRank++;
+    aura=0; clickPower=1; aps=0;
+    state=UPGRADES.map(u=>({id:u.id,cost:u.baseCost,owned:0}));
+    const nextCost=Math.floor(rebirthCost*2.8);
+    rebirthCost=isFinite(nextCost)&&nextCost>0?nextCost:rebirthCost;
+  }
+  clampVars();
+  document.getElementById('storeEl').innerHTML='';
+  updateUI();saveGame();
+  toast('20 Rebirths done! Prestige: '+prestigeRank+' | Bonus: +'+fmt(rebirthBonusClick));
+}
+function ownerUnlockAll(){allTimeAura=1e20;aura=safeNum(Math.max(aura,1e16),0);clampVars();document.getElementById('storeEl').innerHTML='';updateUI();saveGame();toast('All upgrades unlocked!');}
+function ownerMaxEverything(){
+  aura=1e16;allTimeAura=safeNum(Math.max(allTimeAura,1e16),0);
+  clickPower=10000000;aps=10000000;
+  rings=safeInt(rings+1000,0);oc_refreshRingBoost();
+  rebirthBonusClick=safeNum(rebirthBonusClick+1000000,0);
+  clampVars();
+  document.getElementById('storeEl').innerHTML='';
+  updateUI();saveGame();
+  toast('Everything maxed!');
+}
+function ownerSkipToEnd(){allTimeAura=ENDGAME_AT;endgameShown=false;triggerEndgame();}
+function ownerResetRebirthCost(){rebirthCost=1000000;clampVars();updateUI();saveGame();toast('Rebirth cost reset to 1M!');}
+function ownerReset(){
+  if(!confirm('HARD RESET — ALL progress lost!'))return;
+  try { localStorage.removeItem(SAVE_KEY); } catch(e) {}
+  aura=0;clickPower=1;aps=0;rings=0;ringBoost=0;prestigeRank=0;
+  rebirthCost=1000000;allTimeAura=0;rebirthBonusClick=0;endgameShown=false;
+  state=UPGRADES.map(u=>({id:u.id,cost:u.baseCost,owned:0}));
+  document.getElementById('storeEl').innerHTML='';
+  updateUI();closeOwner();
+  toast('Game reset.');
+}
+
+try{
+  const raw=localStorage.getItem(SAVE_KEY);
+  if(raw){const local=JSON.parse(raw);if(local)loadState(local);}
+}catch(e){}
+updateUI();
+
+const bgAnim=document.getElementById('bgAnim');
+for(let i=0;i<35;i++){
+  const p=document.createElement('div');p.className='particle';
+  const size=Math.random()*8+2;
+  p.style.cssText=`width:${size}px;height:${size}px;background:${Math.random()>0.6?'rgba(255,215,0,0.4)':'rgba(255,255,255,0.08)'};left:${Math.random()*100}%;animation-duration:${Math.random()*15+12}s;animation-delay:${Math.random()*-25}s;`;
+  bgAnim.appendChild(p);
+}
+</script>
+</body>
+</html>

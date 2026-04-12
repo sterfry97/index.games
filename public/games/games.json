@@ -7,6 +7,14 @@
     "icon": "🚴",
     "tags": ["arcade", "action", "racing", "skill"]
   },
+    {
+    "id": "Lebron Clicker",
+    "name": "Lebron Clicker",
+    "description": "lebron clicker game",
+    "file": "lebronclicker.html",
+    "icon": "🏀",
+    "tags": ["arcade", "idle", "clicker", "thinking"]
+  },
   {
     "id": "Five Nights at Epsteins",
     "name": "Five Nights at Epstein's",
@@ -14,5 +22,69 @@
     "file": "fnae.html",
     "icon": "😰",
     "tags": ["horror", "scary", "survival", "strategy"]
+  },
+  {
+    "id": "Brotato",
+    "name": "Brotato",
+    "description": "brotato game",
+    "file": "brotato.html",
+    "icon": "🥔",
+    "tags": ["arcade", "action", "survival", "skill"]
+  },
+  {
+    "id": "Slope",
+    "name": "Slope",
+    "description": "slope game",
+    "file": "slope.html",
+    "icon": "🎢",
+    "tags": ["arcade", "action", "skill"]
+  },
+  {
+    "id": "Monster Tracks",
+    "name": "Monster Tracks",
+    "description": "monster tracks game",
+    "file": "monstertracks.html",
+    "icon": "🚗",
+    "tags": ["arcade", "racing", "skill"]
+  },
+  {
+    "id": "Slither.io",
+    "name": "Slither.io",
+    "description": "slither.io game",
+    "file": "slitherio.html",
+    "icon": "🐍",
+    "tags": ["arcade", "multiplayer", "skill"]
+  },
+  {
+    "id": "Binding of Isaac",
+    "name": "Binding of Isaac",
+    "description": "binding of isaac game",
+    "file": "bindingofisaac.html",
+    "icon": "✝️",
+    "tags": ["arcade", "rpg", "survival", "skill"]
+  },
+  {
+    "id": "Kid Chess",
+    "name": "Kid Chess",
+    "description": "kid chess game",
+    "file": "kidchess.html",
+    "icon": "♟️",
+    "tags": ["strategy", "education", "family"]
+  },
+  {
+    "id": "Ages of Conflict",
+    "name": "Ages of Conflict",
+    "description": "ages of conflict game",
+    "file": "agesofconflict.html",
+    "icon": "⚔️",
+    "tags": ["strategy", "simulation", "historical"]
+  },
+  {
+    "id": "Neal.fun",
+    "name": "Neal.fun",
+    "description": "neal.fun game",
+    "file": "nealfun.html",
+    "icon": "�",
+    "tags": ["arcade", "multiplayer", "skill"]
   }
 ]
