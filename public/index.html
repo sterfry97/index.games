@@ -729,6 +729,7 @@
 			{ name: "X / Twitter",     url: "https://www.x.com",               icon: `<img src="/icons/X-Favicon.jpg"   width="32" height="32" style="border-radius:6px;object-fit:contain;" />`, description: "Trending topics & posts", tags: ["social","news"] },
 			{ name: "TikTok",          url: "https://www.tiktok.com",          icon: `<img src="/icons/TT-Favicon.png"  width="32" height="32" style="border-radius:6px;object-fit:contain;" />`, description: "Short-form videos",        tags: ["video","social"] },
 			{ name: "ChatGPT",         url: "https://chat.openai.com",         icon: `<img src="/icons/CGPT-Favicon.png" width="32" height="32" style="border-radius:6px;object-fit:contain;" />`, description: "AI assistant by OpenAI", tags: ["ai","tools"] },
+			{ name: "Now.gg",     url: "https://www.now.gg/",         icon: `<img src="/icons/NGG-Favicon.png" width="32" height="32" style="border-radius:6px;object-fit:contain;" />`, description: "Online games for all.", tags: ["games","dev"] },
 			{ name: "Crazy Games",     url: "https://www.crazygames.com/",         icon: `<img src="/icons/CZG-Favicon.png" width="32" height="32" style="border-radius:6px;object-fit:contain;" />`, description: "Online games for all.", tags: ["games","dev"] },
 			{ name: "Gmail",           url: "https://mail.google.com",         icon: `<img src="https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico" width="32" height="32" style="border-radius:6px;object-fit:contain;" />`, description: "Email by Google", tags: ["productivity","google"] },
 			{ name: "DuckDuckGo",      url: "https://www.duckduckgo.com",      icon: `<img src="/icons/DDG-Favicon.png"  width="32" height="32" style="border-radius:6px;object-fit:contain;" />`, description: "Private search",          tags: ["search"] },
@@ -991,15 +992,17 @@
 		}
 
 		function renderCards(paneEl, list) {
-			const grid = paneEl.querySelector("#games-grid"); if (!grid) return;
-			if (list.length === 0) { grid.innerHTML = '<div class="games-noresults">no games match your search.<br><span style="opacity:0.5">try a different keyword or tag</span></div>'; return; }
-			grid.innerHTML = list.map(g => {
-				const tagsHTML = (g.tags||[]).length ? `<div class="game-card-tags">${(g.tags).map(t=>`<span class="game-card-tag">${t}</span>`).join("")}</div>` : "";
-				return `<div class="game-card" data-file="${g.file}" data-name="${g.name}"><div class="game-card-icon">${g.icon||"🎮"}</div><div class="game-card-name">${g.name}</div>${g.description?`<div class="game-card-desc">${g.description}</div>`:""}${tagsHTML}</div>`;
-			}).join("");
-			grid.querySelectorAll(".game-card").forEach(card => { card.addEventListener("click", () => openGameModal(card.dataset.file, card.dataset.name)); });
-		}
-
+    const grid = paneEl.querySelector("#games-grid"); if (!grid) return;
+    if (list.length === 0) { grid.innerHTML = '<div class="games-noresults">no games match your search.<br><span style="opacity:0.5">try a different keyword or tag</span></div>'; return; }
+    grid.innerHTML = list.map(g => {
+        const tagsHTML = (g.tags||[]).length ? `<div class="game-card-tags">${(g.tags).map(t=>`<span class="game-card-tag">${t}</span>`).join("")}</div>` : "";
+        const iconHTML = (g.icon && g.icon.startsWith("/"))
+            ? `<img src="${g.icon}" style="width:2em;height:2em;object-fit:contain;border-radius:4px;" />`
+            : (g.icon || "🎮");
+        return `<div class="game-card" data-file="${g.file}" data-name="${g.name}"><div class="game-card-icon">${iconHTML}</div><div class="game-card-name">${g.name}</div>${g.description?`<div class="game-card-desc">${g.description}</div>`:""}${tagsHTML}</div>`;
+    }).join("");
+    grid.querySelectorAll(".game-card").forEach(card => { card.addEventListener("click", () => openGameModal(card.dataset.file, card.dataset.name)); });
+}
 		const gameModal    = document.getElementById("game-modal");
 		const gmName       = document.getElementById("gm-name");
 		const gmFile       = document.getElementById("gm-file");
@@ -1008,10 +1011,14 @@
 		const gmFullscreen = document.getElementById("gm-fullscreen");
 
 		function openGameModal(file, name) {
-			gmName.textContent = name; gmFile.textContent = file;
-			gmIframe.src = `/games/${file}`;
-			gameModal.classList.add("open");
-		}
+    if (file === "gamesuggestions.html") {
+        window.open("https://forms.gle/aSBH2kMVEUwmhiRp6", "_blank");
+        return;
+    }
+    gmName.textContent = name; gmFile.textContent = file;
+    gmIframe.src = `/games/${file}`;
+    gameModal.classList.add("open");
+}
 		function closeGameModal() { gameModal.classList.remove("open"); gmIframe.src="about:blank"; }
 		gmClose.addEventListener("click", closeGameModal);
 		document.addEventListener("keydown", e => { if (e.key==="Escape" && gameModal.classList.contains("open")) closeGameModal(); });

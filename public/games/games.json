@@ -1,5 +1,13 @@
 [
   {
+    "id": "Game Suggestions",
+    "name": "Game Suggestions",
+    "description": "Suggest a game to add.",
+    "file": "gamesuggestions.html",
+    "icon": "/icons/GameSuggestions-Favicons.png",
+    "tags": ["suggestion", "feedback", "community"]
+  },
+  {
     "id": "Wheelie Bike",
     "name": "Wheelie Bike",
     "description": "wheelie bike game",
@@ -24,12 +32,28 @@
     "tags": ["horror", "scary", "survival", "strategy"]
   },
   {
+    "id": "Baldi's Basics",
+    "name": "Baldi's Basics",
+    "description": "baldi's basics game",
+    "file": "baldi.html",
+    "icon": "📏",
+    "tags": ["arcade", "education", "fun"]
+  },
+  {
     "id": "Brotato",
     "name": "Brotato",
     "description": "brotato game",
     "file": "brotato.html",
     "icon": "🥔",
     "tags": ["arcade", "action", "survival", "skill"]
+  },
+  {
+    "id": "Geometry Dash",
+    "name": "Geometry Dash",
+    "description": "geometry dash game",
+    "file": "geometrydash.html",
+    "icon": "🔺",
+    "tags": ["arcade", "action", "skill"]
   },
   {
     "id": "Slope",
@@ -84,7 +108,15 @@
     "name": "Neal.fun",
     "description": "neal.fun game",
     "file": "nealfun.html",
-    "icon": "�",
+    "icon": "/icons/NDF-Favicon.png",
     "tags": ["arcade", "multiplayer", "skill"]
+  },
+  {
+    "id": "Space Waves",
+    "name": "Space Waves",
+    "description": "space waves game",
+    "file": "spacewaves.html",
+    "icon": "🚀",
+    "tags": ["arcade", "action", "space", "shooter"]
   }
 ]
